@@ -7,9 +7,9 @@ Our goal is to:
 - Lightweight and compact.
 - Allows expressions likes functional composition.
 
-But Ultramarine is not:
+But Ultramarine is:
 
-- **Pure** FRP Framework (Swift is not for functional programing)
+- **NOT** Pure FRP Framework (Swift is not for functional programing)
 
 # Basic
 
