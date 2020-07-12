@@ -5,8 +5,11 @@ Ultramarine is like a Functional Reactive Programming framework.
 Our goal is to:
 
 - Lightweight and compact.
-- Allows for functional composition of classes.
-- Minimal utility methods.
+- Allows expressions likes functional composition.
+
+But Ultramarine is not:
+
+- **Pure** FRP Framework (Swift is not for functional programing)
 
 # Basic
 
