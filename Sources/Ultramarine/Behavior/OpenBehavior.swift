@@ -3,16 +3,14 @@
 //  Ultramarine
 //
 
-public final class OpenBehavior<Value>: Behavior<Value>, Subscriber {
-    
-    public typealias Input = Value
+public final class OpenBehavior<Value>: Behavior<Value> {
     
     public override init(_ initialValue: Value) {
         super.init(initialValue)
     }
     
-    public func notify(_ input: Input) {
-        update(input)
+    public func set(_ value: Value) {
+        update(value)
     }
     
     public override var value: Value {

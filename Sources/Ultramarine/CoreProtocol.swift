@@ -16,3 +16,8 @@ public protocol Subscriber: AnyObject {
     
     func notify(_ input: Input)
 }
+
+public protocol Cancellable {
+    
+    func cancel()
+}

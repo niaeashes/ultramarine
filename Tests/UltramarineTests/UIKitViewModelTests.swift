@@ -29,6 +29,7 @@ class UIKitViewModelTests: XCTestCase {
             recoginizer = UITapGestureRecognizer(target: tapEvent, action: tapEvent.selector)
         }
         
+        @Stream var eventStream = EventStream()
         @Selectable var tapEvent = SelectorEvent<UITapGestureRecognizer, String>() { sender in
             return (sender.view as? UILabel)?.text
         }
@@ -37,6 +38,10 @@ class UIKitViewModelTests: XCTestCase {
         func subscribe(_ label: UILabel) {
             $text.assign(to: \UILabel.text, on: label)
             label.addGestureRecognizer(recoginizer)
+        }
+        
+        @objc func onTap(_ sender: Any) {
+            eventStream(TapEvent(sender))
         }
     }
     
@@ -60,7 +65,7 @@ class UIKitViewModelTests: XCTestCase {
         viewModel.text = "updated 1"
         XCTAssertEqual(label.text, "updated 1")
         
-        viewModel.$text.notify("updated 2")
+        viewModel.$text.set("updated 2")
         XCTAssertEqual(label.text, "updated 2")
         
         viewModel.$text <<= "updated 3"

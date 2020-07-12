@@ -21,21 +21,20 @@ public final class ClosedBehavior<Value>: Behavior<Value> {
         
         func notify(_ input: Value) {
             root?.update(input)
-            root?.relay()
-        }
-    }
-    
-    private func relay() {
-        do {
-            let subscriptions = self.subscriptions
-            let value = self.value
-            subscriptions.forEach { $0.send(value) }
         }
     }
     
     public func watch(to behavior: Behavior<Value>) {
         cancellable?.cancel()
         cancellable = behavior.connect(to: subscriber)
+    }
+}
+
+extension ClosedBehavior: Cancellable {
+    
+    public func cancel() {
+        cancellable?.cancel()
+        cancellable = nil
     }
 }
 

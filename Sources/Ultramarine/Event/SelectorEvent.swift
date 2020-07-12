@@ -3,6 +3,8 @@
 //  Ultramarine
 //
 
+#if !os(macOS)
+
 import Foundation
 
 public final class SelectorEvent<Sender, Value>: NSObject, Cancellable {
@@ -52,3 +54,5 @@ public struct Selectable<Sender, Value> {
     public var projectedValue: Event<Value, Never> { return wrappedValue.event }
     public var wrappedValue: SelectorEvent<Sender, Value>
 }
+
+#endif
