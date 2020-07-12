@@ -106,26 +106,23 @@ let label = UILabel()
 
 viewModel.subscribe(label)
 
-viewModel.text = "updated 1" // Simple set.
-XCTAssertEqual(label.text, "updated 1")
+viewModel.text = "updated" // Simple set.
 
 // Use refresh method for projected value.
-viewModel.$text.refresh("updated 2")
-XCTAssertEqual(label.text, "updated 2")
+viewModel.$text.refresh("updated")
 
 // Use <<= operator.
-viewModel.$text <<= "updated 3"
-XCTAssertEqual(label.text, "updated 3")
+viewModel.$text <<= "updated"
 ```
 
 ## Event: Simple counter and tap event.
 
 ```swift
 class ViewModel {
-    let tapEvent = Event<Void, Never>()
+    let tapEvent = Event<Void>()
 
     func tap() {
-        tapEvent.notify(Void())
+        tapEvent.trigger(Void())
     }
 }
 
@@ -144,11 +141,6 @@ let counter = Counter()
 
 viewModel.tapEvent.connect(postTo: counter)
 
-XCTAssertEqual(counter.count, 0)
-
-viewModel.tap()
-XCTAssertEqual(counter.count, 1)
-
-viewModel.tap()
-XCTAssertEqual(counter.count, 2)
+viewModel.tap() // counter.count = 1
+viewModel.tap() // counter.count = 2
 ```
