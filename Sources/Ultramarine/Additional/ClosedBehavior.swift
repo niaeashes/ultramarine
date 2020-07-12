@@ -19,7 +19,7 @@ public final class ClosedBehavior<Value>: Behavior<Value> {
             self.root = root
         }
         
-        func receive(_ input: Value) {
+        func notify(_ input: Value) {
             root?.update(input)
             root?.relay()
         }

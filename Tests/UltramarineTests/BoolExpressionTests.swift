@@ -15,23 +15,57 @@ class BoolExpressionTests: XCTestCase {
     override func tearDownWithError() throws {
         // Put teardown code here. This method is called after the invocation of each test method in the class.
     }
-
+    
     func testAnd() throws {
         let isBird = false.continuous
         let isMale = false.continuous
         
         let isMaleBird = isBird && isMale
         
-        XCTAssertFalse(isMaleBird.value!)
+        XCTAssertFalse(isMaleBird.value)
         
         isBird <<= true
         XCTAssertTrue(isBird.value)
         XCTAssertFalse(isMale.value)
-        XCTAssertFalse(isMaleBird.value!)
+        XCTAssertFalse(isMaleBird.value)
         
         isMale <<= true
         XCTAssertTrue(isBird.value)
         XCTAssertTrue(isMale.value)
-        XCTAssertTrue(isMaleBird.value!)
+        XCTAssertTrue(isMaleBird.value)
+    }
+    
+    func testOr() throws {
+        let isLoadingA = false.continuous
+        let isLoadingB = false.continuous
+        
+        let isNowLoading = isLoadingA || isLoadingB
+        
+        XCTAssertFalse(isNowLoading.value)
+        
+        isLoadingA <<= true
+        isLoadingB <<= false
+        XCTAssertTrue(isLoadingA.value)
+        XCTAssertFalse(isLoadingB.value)
+        XCTAssertTrue(isNowLoading.value)
+        
+        isLoadingA <<= false
+        isLoadingB <<= true
+        XCTAssertFalse(isLoadingA.value)
+        XCTAssertTrue(isLoadingB.value)
+        XCTAssertTrue(isNowLoading.value)
+    }
+    
+    func testNot() throws {
+        let isHead = true.continuous
+        let isTail = !isHead
+        
+        XCTAssertTrue(isHead.value)
+        XCTAssertFalse(isTail.value)
+        
+        isHead <<= false
+        
+        XCTAssertFalse(isHead.value)
+        XCTAssertTrue(isTail.value)
     }
 }

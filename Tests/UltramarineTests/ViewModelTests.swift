@@ -1,145 +1,81 @@
 //
 //  ViewModelTests.swift
-//  UltramarineTests
 //
 
 import XCTest
 import Ultramarine
 
-#if !os(macOS)
-import UIKit
+private class Button {
+    weak var delegate: ButtonDelegate? = nil
+    var text: String = ""
+    
+    func tap() {
+        delegate?.onTap()
+    }
+}
+
+private protocol ButtonDelegate: AnyObject {
+    func onTap()
+}
 
 class ViewModelTests: XCTestCase {
-
+    
     override func setUpWithError() throws {
         // Put setup code here. This method is called before the invocation of each test method in the class.
     }
-
+    
     override func tearDownWithError() throws {
         // Put teardown code here. This method is called after the invocation of each test method in the class.
     }
     
-    class LabelViewModel {
+    private class ButtonViewModel: ButtonDelegate {
         
         typealias Input = String
         
         @Pub var text = ""
         
-        init() {
-            recoginizer = UITapGestureRecognizer(target: tapEvent, action: tapEvent.selector)
+        let tapEvent = Event<Void, Never>()
+        
+        func subscribe(_ button: Button) {
+            $text.assign(to: \Button.text, on: button)
+            button.delegate = self
         }
         
-        @Selectable var tapEvent = SelectorEvent<UITapGestureRecognizer, String>() { sender in
-            return (sender.view as? UILabel)?.text
-        }
-        var recoginizer: UITapGestureRecognizer! = nil
-        
-        func subscribe(_ label: UILabel) {
-            $text.assign(to: \UILabel.text, on: label)
-            label.addGestureRecognizer(recoginizer)
+        func onTap() {
+            tapEvent.notify(Void())
         }
     }
     
-    class RecordSubscriber<Input>: Subscriber {
+    class Counter: Subscriber {
+        typealias Input = Void
         
-        typealias Input = Input
+        private(set) var count = 0
         
-        private(set) var last: Input? = nil
-        
-        func receive(_ input: Input) {
-            last = input
+        func notify(_ input: Void) {
+            count += 1
         }
     }
     
     func testBasicAssign() throws {
-        let viewModel = LabelViewModel()
-        let label = UILabel()
+        let viewModel = ButtonViewModel()
+        let button = Button()
         
-        viewModel.subscribe(label)
+        viewModel.subscribe(button)
         
-        viewModel.text = "updated 1"
-        XCTAssertEqual(label.text, "updated 1")
+        viewModel.text = "Button Title"
+        XCTAssertEqual(button.text, "Button Title")
         
-        viewModel.$text.update("updated 2")
-        XCTAssertEqual(label.text, "updated 2")
+        let counter = Counter()
+        viewModel.tapEvent.connect(postTo: counter)
         
-        viewModel.$text <<= "updated 3"
-        XCTAssertEqual(label.text, "updated 3")
-    }
-    
-    func testAssignTargetHoldWeakRef() throws {
-        let viewModel = LabelViewModel()
-        weak var weakLabel: UILabel? = nil
+        XCTAssertEqual(counter.count, 0)
         
-        do {
-            let label = UILabel()
-            weakLabel = label
-            
-            viewModel.subscribe(label)
-            
-            viewModel.$text <<= "updated 1"
-            XCTAssertEqual(label.text, "updated 1")
-            
-            XCTAssertNotNil(weakLabel)
-        }
+        button.tap()
+        XCTAssertEqual(counter.count, 1)
         
-        XCTAssertNil(weakLabel)
-    }
-    
-    func testTapEvent() {
-        let viewModel = LabelViewModel()
-        let label = UILabel()
-        let sub = RecordSubscriber<String>()
-
-        label.isUserInteractionEnabled = true
-        
-        viewModel.subscribe(label)
-        
-        viewModel.$tapEvent.connect(postTo: sub)
-        
-        label.text = "updated 1"
-        
-        do {
-            XCTAssertNotEqual(sub.last, "updated 1")
-            viewModel.recoginizer.execute()
-            XCTAssertEqual(sub.last, "updated 1")
-        }
+        button.tap()
+        button.tap()
+        button.tap()
+        XCTAssertEqual(counter.count, 4)
     }
 }
-
-// Return type alias
-private typealias TargetActionInfo = [(target: AnyObject, action: Selector)]
-
-// UIGestureRecognizer extension
-private extension UIGestureRecognizer {
-    
-    func getTargetInfo() -> TargetActionInfo {
-        var targetsInfo: TargetActionInfo = []
-        
-        if let targets = self.value(forKeyPath: "_targets") as? [NSObject] {
-            for target in targets {
-                // Getting selector by parsing the description string of a UIGestureRecognizerTarget
-                let selectorString = String.init(describing: target).components(separatedBy: ", ").first!.replacingOccurrences(of: "(action=", with: "")
-                let selector = NSSelectorFromString(selectorString)
-                
-                // Getting target from iVars
-                let targetActionPairClass: AnyClass = NSClassFromString("UIGestureRecognizerTarget")!
-                let targetIvar: Ivar = class_getInstanceVariable(targetActionPairClass, "_target")!
-                let targetObject: AnyObject = object_getIvar(target, targetIvar) as AnyObject
-                
-                targetsInfo.append((target: targetObject, action: selector))
-            }
-        }
-        
-        return targetsInfo
-    }
-    
-    func execute() {
-        let targetsInfo = self.getTargetInfo()
-        for info in targetsInfo {
-            info.target.performSelector(onMainThread: info.action, with: self, waitUntilDone: true)
-        }
-    }
-}
-
-#endif

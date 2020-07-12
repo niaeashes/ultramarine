@@ -15,17 +15,13 @@ public final class Event<Value, Failure: Error> {
     }
     
     func post(_ value: Value) {
-        do {
-            let subscriptions = self.subscriptions
-            subscriptions.forEach { $0.send(.success(value)) }
-        }
+        let subscriptions = self.subscriptions
+        subscriptions.forEach { $0.send(.success(value)) }
     }
     
     func raise(_ error: Failure) {
-        do {
-            let subscriptions = self.subscriptions
-            subscriptions.forEach { $0.send(.failure(error)) }
-        }
+        let subscriptions = self.subscriptions
+        subscriptions.forEach { $0.send(.failure(error)) }
     }
 }
 
@@ -38,7 +34,7 @@ extension Event: Publisher {
         
         let sub = Subscription<EventPayload>() { [weak subscriber] payload, cancellable in
             if let subscriber = subscriber {
-                subscriber.receive(payload)
+                subscriber.notify(payload)
             } else {
                 cancellable.cancel()
             }
@@ -55,7 +51,7 @@ extension Event: Publisher {
             if let subscriber = subscriber {
                 switch payload {
                 case .success(let value):
-                    subscriber.receive(value)
+                    subscriber.notify(value)
                 default:
                     break
                 }
@@ -75,7 +71,7 @@ extension Event: Publisher {
             if let subscriber = subscriber {
                 switch payload {
                 case .failure(let error):
-                    subscriber.receive(error)
+                    subscriber.notify(error)
                 default:
                     break
                 }
@@ -93,13 +89,21 @@ extension Event: Subscriber {
     
     public typealias Input = EventPayload
     
-    public func receive(_ input: Input) {
+    public func notify(_ input: Input) {
         switch input {
         case .success(let value):
             post(value)
         case .failure(let error):
             raise(error)
         }
+    }
+    
+    public func notify(_ success: Value) {
+        post(success)
+    }
+    
+    public func notify(_ error: Failure) {
+        raise(error)
     }
 }
 

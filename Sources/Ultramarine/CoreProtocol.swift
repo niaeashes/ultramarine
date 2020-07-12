@@ -14,5 +14,5 @@ public protocol Subscriber: AnyObject {
     
     associatedtype Input
     
-    func receive(_ input: Input)
+    func notify(_ input: Input)
 }

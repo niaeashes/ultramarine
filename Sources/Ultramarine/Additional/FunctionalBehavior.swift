@@ -43,7 +43,7 @@ public final class FunctionalBehavior<Value>: Behavior<Optional<Value>>, Cancell
             self.root = root
         }
         
-        func receive(_ input: Input) {
+        func notify(_ input: Input) {
             root?.relay()
         }
     }
@@ -67,7 +67,7 @@ public final class FunctionalBehavior<Value>: Behavior<Optional<Value>>, Cancell
         return lastError != nil
     }
     
-    public override var value: Value? {
+    public override var value: Value! {
         do {
             return try function?(self)
         } catch {

@@ -11,11 +11,7 @@ public final class OpenBehavior<Value>: Behavior<Value>, Subscriber {
         super.init(initialValue)
     }
     
-    public override func update(_ value: Value) {
-        super.update(value)
-    }
-    
-    public func receive(_ input: Input) {
+    public func notify(_ input: Input) {
         update(input)
     }
     

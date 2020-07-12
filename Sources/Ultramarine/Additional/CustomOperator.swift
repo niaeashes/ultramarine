@@ -17,7 +17,7 @@ infix operator <<=: AssignmentPrecedence
 extension Subscriber {
     
     public static func <<= (subscriber: Self, value: Input) {
-        subscriber.receive(value)
+        subscriber.notify(value)
     }
 }
 

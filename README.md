@@ -70,7 +70,7 @@ class LabelViewModel {
 ```
 
 @Pub property wrapper means Publisher.
-The projected value is OpenBehavior that holds updatable value via update method and `<<=` operator.
+The projected value is OpenBehavior that holds updatable value via refresh method and `<<=` operator.
 
 ```swift
 let viewModel = LabelViewModel()
@@ -81,11 +81,46 @@ viewModel.subscribe(label)
 viewModel.text = "updated 1" // Simple set.
 XCTAssertEqual(label.text, "updated 1")
 
-// Use update method for projected value.
-viewModel.$text.update("updated 2")
+// Use refresh method for projected value.
+viewModel.$text.refresh("updated 2")
 XCTAssertEqual(label.text, "updated 2")
 
 // Use <<= operator.
 viewModel.$text <<= "updated 3"
 XCTAssertEqual(label.text, "updated 3")
+```
+
+## Event: Simple counter and tap event.
+
+```
+class ViewModel {
+    let tapEvent = Event<Void, Never>()
+
+    func tap() {
+        tapEvent.notify(Void())
+    }
+}
+
+class Counter: Subscriber {
+    typealias Input = Void
+
+    private(set) var count = 0
+
+    func notify(_ input: Void) {
+        count += 1
+    }
+}
+
+let viewModel = ViewModel()
+let counter = Counter()
+
+viewModel.tapEvent.connect(postTo: counter)
+
+XCTAssertEqual(counter.count, 0)
+
+viewModel.tap()
+XCTAssertEqual(counter.count, 1)
+
+viewModel.tap()
+XCTAssertEqual(counter.count, 2)
 ```

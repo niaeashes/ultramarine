@@ -54,7 +54,7 @@ extension Behavior: Publisher {
         
         return subscribe(Subscription<Output> { [weak subscriber] value, cancellable in
             if let subscriber = subscriber {
-                subscriber.receive(value)
+                subscriber.notify(value)
             } else {
                 cancellable.cancel()
             }
@@ -68,5 +68,30 @@ extension Behavior {
     
     public func onUpdate(_ completion: @escaping (Value, Cancellable) -> Void) -> Cancellable {
         return subscribe(Subscription<Value>(completion))
+    }
+}
+
+// MARK - Behavior.
+
+extension Behavior where Output: Continuous {
+    
+    @discardableResult
+    public func assign<Root: AnyObject>(to keyPath: ReferenceWritableKeyPath<Root, Output>, on object: Root) -> Cancellable {
+        
+        let sub = Subscription(to: keyPath, on: object)
+        subscribe(sub)
+        sub.send(value)
+        
+        return sub
+    }
+    
+    @discardableResult
+    public func assign<Root: AnyObject>(to keyPath: ReferenceWritableKeyPath<Root, Optional<Output>>, on object: Root) -> Cancellable {
+        
+        let sub = Subscription(to: keyPath, on: object)
+        subscribe(sub)
+        sub.send(value)
+        
+        return sub
     }
 }
