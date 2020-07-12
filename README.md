@@ -92,7 +92,7 @@ XCTAssertEqual(label.text, "updated 3")
 
 ## Event: Simple counter and tap event.
 
-```
+```swift
 class ViewModel {
     let tapEvent = Event<Void, Never>()
 
