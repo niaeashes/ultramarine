@@ -22,17 +22,6 @@ class StringFormatTests: XCTestCase {
         let format = "\(%a), \(%b).".format
         
         XCTAssertEqual(format.value, "Hello, World.")
-        
-        let name = "World".continuous
-        let hello = "Hello, \(%name)."
-
-        print(hello) // Hello, World.
-
-        name <<= "Alice"
-        print(hello) // Hello, Alice.
-
-        name <<= "Bob"
-        print(hello) // Hello, Bob.
     }
     
     func testPerformance() {
