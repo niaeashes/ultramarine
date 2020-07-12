@@ -92,10 +92,6 @@ private class ReplaceTokenStorage {
 
 extension Behavior where Value: CustomStringConvertible {
     
-    public var string: Behavior<String> {
-        InjectionBehavior<Value, String>(source: self) { return $0.description }
-    }
-    
     public var replaceToken: String {
         ReplaceTokenStorage.spawn()
         return ReplaceTokenStorage.current!.register(source: string)
@@ -104,7 +100,7 @@ extension Behavior where Value: CustomStringConvertible {
 
 extension String {
     
-    public var formated: FormattedStringBehavior {
+    public var format: FormattedStringBehavior {
         defer { ReplaceTokenStorage.current?.clear() }
         return FormattedStringBehavior(format: self)
     }

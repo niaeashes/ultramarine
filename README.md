@@ -30,26 +30,54 @@ Behavior is always Publisher and notifies Subscribers when the value changes.
 
 # Usecase
 
-## Functional composition for Number
+## Responsive numeric expression
+
+Ultramarine supports recalculated numeric types over continuous time.
 
 ```swift
 let a = 1.continuous
 
 let b = a + 10 // b is always `a + 10`
 
-XCTAssertEqual(a.value, 1)
-XCTAssertEqual(b.value, 11)
+print(a.value) // 1
+print(b.value) // 11
 
 a += 10
 
-XCTAssertEqual(a.value, 11)
-XCTAssertEqual(b.value, 21)
+print(a.value) // 11
+print(b.value) // 21
 
 a -= 6
 
-XCTAssertEqual(a.value, 5)
-XCTAssertEqual(b.value, 15)
+print(a.value) // 5
+print(b.value) // 15
 ```
+
+## String formatting
+
+```swift
+let name = "World".continuous
+let hello = "Hello, \(%name).".format
+
+print(hello) // Hello, World.
+
+name <<= "Alice"
+print(hello) // Hello, Alice.
+
+name <<= "Bob"
+print(hello) // Hello, Bob.
+
+```
+
+`%` prefix operator is replaceable `.replaceToken`.
+
+```
+let hello = "Hello, \(name.replaceToken)".format
+```
+
+`.format` is required.
+If you don't insert `.format`, the replaceToken will be inserted into the string.
+For example: `Hello, <:-0-:>.`
 
 ## ViewModel and View (MVVM Architecture)
 
