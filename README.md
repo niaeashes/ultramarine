@@ -50,3 +50,42 @@ a -= 6
 XCTAssertEqual(a.value, 5)
 XCTAssertEqual(b.value, 15)
 ```
+
+## ViewModel and View (MVVM Architecture)
+
+ViewModel created in Ultramarine makes it easy to bind values to a View.
+For example:
+
+```swift
+import UIKit
+
+class LabelViewModel {
+
+    @Pub var text = ""
+
+    func subscribe(_ label: UILabel) {
+        $text.assign(to: \UILabel.text, on: label)
+    }
+}
+```
+
+@Pub property wrapper means Publisher.
+The projected value is OpenBehavior that holds updatable value via update method and `<<=` operator.
+
+```swift
+let viewModel = LabelViewModel()
+let label = UILabel()
+
+viewModel.subscribe(label)
+
+viewModel.text = "updated 1" // Simple set.
+XCTAssertEqual(label.text, "updated 1")
+
+// Use update method for projected value.
+viewModel.$text.update("updated 2")
+XCTAssertEqual(label.text, "updated 2")
+
+// Use <<= operator.
+viewModel.$text <<= "updated 3"
+XCTAssertEqual(label.text, "updated 3")
+```

@@ -57,10 +57,10 @@ class ViewModelTests: XCTestCase {
         
         viewModel.subscribe(label)
         
-        viewModel.$text <<= "updated 1"
+        viewModel.text = "updated 1"
         XCTAssertEqual(label.text, "updated 1")
         
-        viewModel.$text <<= "updated 2"
+        viewModel.$text.update("updated 2")
         XCTAssertEqual(label.text, "updated 2")
         
         viewModel.$text <<= "updated 3"
