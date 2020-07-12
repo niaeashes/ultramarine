@@ -72,7 +72,16 @@ extension Behavior {
     }
 }
 
-// MARK - Behavior.
+// MARK - CustomStringConvertible Behavior.
+
+extension Behavior: CustomStringConvertible where Value: CustomStringConvertible {
+    
+    public var description: String {
+        value.description
+    }
+}
+
+// MARK - Assignable Behavior.
 
 extension Behavior where Output: Continuous {
     

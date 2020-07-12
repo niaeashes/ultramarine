@@ -28,10 +28,6 @@ public final class InjectionBehavior<S, R>: Behavior<R> {
     private func run() {
         update(handler(source.value))
     }
-    
-    deinit {
-        print("deinit")
-    }
 }
 
 extension InjectionBehavior: Cancellable {
