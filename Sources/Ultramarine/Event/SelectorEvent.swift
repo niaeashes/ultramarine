@@ -7,27 +7,24 @@
 
 import Foundation
 
-public final class SelectorEvent<Sender, Value>: NSObject, Cancellable {
+public final class SelectorEvent<Sender>: NSObject {
     
-    public typealias WrappedEvent = Event<Value, Never>
+    public typealias WrappedEvent = Event<Sender>
     
     public var selector: Selector { return #selector(SelectorEvent.spawn(_:)) }
     
     private var subscription: Subscription<Sender>?
     let event = WrappedEvent()
     
-    public init(_ handler: @escaping (Sender) -> Value?) {
+    public override init() {
         
         let event = self.event
         
         subscription = Subscription<Sender>() { object, _ in
-            switch handler(object) {
-            case .some(let value):
-                event.post(value)
-            default:
-                break
-            }
+            event.trigger(object)
         }
+        
+        super.init()
     }
     
     @objc private func spawn(_ sender: Any) {
@@ -37,22 +34,25 @@ public final class SelectorEvent<Sender, Value>: NSObject, Cancellable {
             assertionFailure()
         }
     }
+}
+
+extension SelectorEvent: Cancellable {
     
     public func cancel() {
         subscription?.cancel()
         subscription = nil
     }
+    
+    public var isCanceled: Bool { subscription == nil }
 }
 
 @propertyWrapper
-public struct Selectable<Sender, Value> {
+public struct Selectable<Sender> {
     
-    public init(wrappedValue event: SelectorEvent<Sender, Value>) {
-        self.wrappedValue = event
-    }
+    public init() {}
     
-    public var projectedValue: Event<Value, Never> { return wrappedValue.event }
-    public var wrappedValue: SelectorEvent<Sender, Value>
+    public var wrappedValue: Event<Sender> { return projectedValue.event }
+    public let projectedValue = SelectorEvent<Sender>()
 }
 
 #endif

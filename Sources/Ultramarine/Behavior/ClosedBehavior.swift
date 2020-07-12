@@ -36,6 +36,8 @@ extension ClosedBehavior: Cancellable {
         cancellable?.cancel()
         cancellable = nil
     }
+    
+    public var isCanceled: Bool { cancellable == nil }
 }
 
 // MARK: - Utilities.

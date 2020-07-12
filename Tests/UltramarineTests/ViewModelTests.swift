@@ -34,7 +34,7 @@ class ViewModelTests: XCTestCase {
         
         @Pub var text = ""
         
-        let tapEvent = Event<Void, Never>()
+        let tapEvent = Event<Void>()
         
         func subscribe(_ button: Button) {
             $text.assign(to: \Button.text, on: button)
@@ -42,7 +42,7 @@ class ViewModelTests: XCTestCase {
         }
         
         func onTap() {
-            tapEvent.notify(Void())
+            tapEvent.trigger(Void())
         }
     }
     
@@ -66,7 +66,7 @@ class ViewModelTests: XCTestCase {
         XCTAssertEqual(button.text, "Button Title")
         
         let counter = Counter()
-        viewModel.tapEvent.connect(postTo: counter)
+        viewModel.tapEvent.connect(to: counter)
         
         XCTAssertEqual(counter.count, 0)
         

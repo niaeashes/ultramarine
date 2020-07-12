@@ -3,7 +3,7 @@
 //  Ultramarine
 //
 
-class Subscription<Input>: Cancellable {
+class Subscription<Input> {
     
     var handler: ((Input, Cancellable) -> Void)?
     
@@ -34,8 +34,13 @@ class Subscription<Input>: Cancellable {
     func send(_ input: Input) {
         handler?(input, self)
     }
+}
+
+extension Subscription: Cancellable {
     
     public func cancel() {
         handler = nil
     }
+    
+    public var isCanceled: Bool { handler == nil }
 }

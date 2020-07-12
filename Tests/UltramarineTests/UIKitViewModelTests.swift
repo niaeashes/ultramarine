@@ -26,22 +26,15 @@ class UIKitViewModelTests: XCTestCase {
         @Pub var text = ""
         
         init() {
-            recoginizer = UITapGestureRecognizer(target: tapEvent, action: tapEvent.selector)
+            recoginizer = UITapGestureRecognizer(target: $tapEvent, action: $tapEvent.selector)
         }
         
-        @Stream var eventStream = EventStream()
-        @Selectable var tapEvent = SelectorEvent<UITapGestureRecognizer, String>() { sender in
-            return (sender.view as? UILabel)?.text
-        }
+        @Selectable var tapEvent: Event<UITapGestureRecognizer>
         var recoginizer: UITapGestureRecognizer! = nil
         
         func subscribe(_ label: UILabel) {
             $text.assign(to: \UILabel.text, on: label)
             label.addGestureRecognizer(recoginizer)
-        }
-        
-        @objc func onTap(_ sender: Any) {
-            eventStream(TapEvent(sender))
         }
     }
     
@@ -94,20 +87,20 @@ class UIKitViewModelTests: XCTestCase {
     func testTapEvent() {
         let viewModel = LabelViewModel()
         let label = UILabel()
-        let sub = RecordSubscriber<String>()
+        let sub = RecordSubscriber<UITapGestureRecognizer>()
 
         label.isUserInteractionEnabled = true
         
         viewModel.subscribe(label)
         
-        viewModel.$tapEvent.connect(postTo: sub)
+        viewModel.tapEvent.connect(to: sub)
         
         label.text = "updated 1"
         
         do {
-            XCTAssertNotEqual(sub.last, "updated 1")
+            XCTAssertNil(sub.last)
             viewModel.recoginizer.execute()
-            XCTAssertEqual(sub.last, "updated 1")
+            XCTAssertEqual(sub.last, viewModel.recoginizer)
         }
     }
 }

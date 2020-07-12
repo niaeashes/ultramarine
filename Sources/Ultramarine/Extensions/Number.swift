@@ -9,8 +9,6 @@ private let RHS_KEY = "right-hand source"
 
 extension Behavior where Value: AdditiveArithmetic {
     
-    typealias RuntimeError = FunctionalBehavior<Value>.FunctionRuntimeError
-    
     public static func += (source: Behavior<Value>, value: Value) {
         source.update(source.value + value)
     }
@@ -19,44 +17,20 @@ extension Behavior where Value: AdditiveArithmetic {
         source.update(source.value - value)
     }
     
-    public static func + (source: Behavior<Value>, value: Value) -> FunctionalBehavior<Value> {
-        let result = FunctionalBehavior<Value>() { computingSpace in
-            let source: Value = try computingSpace.find(SOURCE_KEY)
-            return source + value
-        }
-        result.assign(SOURCE_KEY, member: source)
-        return result
+    public static func + (source: Behavior<Value>, value: Value) -> Behavior<Value> {
+        return InjectionBehavior(source: source) { return $0 + value }
     }
     
-    public static func - (source: Behavior<Value>, value: Value) -> FunctionalBehavior<Value> {
-        let result = FunctionalBehavior<Value>() { computingSpace in
-            let source: Value = try computingSpace.find(SOURCE_KEY)
-            return source - value
-        }
-        result.assign(SOURCE_KEY, member: source)
-        return result
+    public static func - (source: Behavior<Value>, value: Value) -> Behavior<Value> {
+        return InjectionBehavior(source: source) { return $0 - value }
     }
     
-    public static func + (lhs: Behavior<Value>, rhs: Behavior<Value>) -> FunctionalBehavior<Value> {
-        let result = FunctionalBehavior<Value>() { computingSpace in
-            let lhs: Value = try computingSpace.find(LHS_KEY)
-            let rhs: Value = try computingSpace.find(RHS_KEY)
-            return lhs + rhs
-        }
-        result.assign(LHS_KEY, member: lhs)
-        result.assign(RHS_KEY, member: rhs)
-        return result
+    public static func + (lhs: Behavior<Value>, rhs: Behavior<Value>) -> Behavior<Value> {
+        return CombineBehavior(source: lhs, source: rhs) { return $0 + $1 }
     }
     
-    public static func - (lhs: Behavior<Value>, rhs: Behavior<Value>) -> FunctionalBehavior<Value> {
-        let result = FunctionalBehavior<Value>() { computingSpace in
-            let lhs: Value = try computingSpace.find(LHS_KEY)
-            let rhs: Value = try computingSpace.find(RHS_KEY)
-            return lhs - rhs
-        }
-        result.assign(LHS_KEY, member: lhs)
-        result.assign(RHS_KEY, member: rhs)
-        return result
+    public static func - (lhs: Behavior<Value>, rhs: Behavior<Value>) -> Behavior<Value> {
+        return CombineBehavior(source: lhs, source: rhs) { return $0 - $1 }
     }
 }
 
@@ -66,24 +40,12 @@ extension Behavior where Value: Numeric {
         source.update(source.value * value)
     }
     
-    public static func * (source: Behavior<Value>, value: Value) -> FunctionalBehavior<Value> {
-        let result = FunctionalBehavior<Value>() { computingSpace in
-            let source: Value = try computingSpace.find(SOURCE_KEY)
-            return source * value
-        }
-        result.assign(SOURCE_KEY, member: source)
-        return result
+    public static func * (source: Behavior<Value>, value: Value) -> Behavior<Value> {
+        return InjectionBehavior(source: source) { return $0 * value }
     }
     
-    public static func * (lhs: Behavior<Value>, rhs: Behavior<Value>) -> FunctionalBehavior<Value> {
-        let result = FunctionalBehavior<Value>() { computingSpace in
-            let lhs: Value = try computingSpace.find(LHS_KEY)
-            let rhs: Value = try computingSpace.find(RHS_KEY)
-            return lhs * rhs
-        }
-        result.assign(LHS_KEY, member: lhs)
-        result.assign(RHS_KEY, member: rhs)
-        return result
+    public static func * (lhs: Behavior<Value>, rhs: Behavior<Value>) -> Behavior<Value> {
+        return CombineBehavior(source: lhs, source: rhs) { return $0 * $1 }
     }
 }
 
@@ -93,23 +55,11 @@ extension Behavior where Value: FloatingPoint {
         source.update(source.value / value)
     }
     
-    public static func / (source: Behavior<Value>, value: Value) -> FunctionalBehavior<Value> {
-        let result = FunctionalBehavior<Value>() { computingSpace in
-            let source: Value = try computingSpace.find(SOURCE_KEY)
-            return source / value
-        }
-        result.assign(SOURCE_KEY, member: source)
-        return result
+    public static func / (source: Behavior<Value>, value: Value) -> Behavior<Value> {
+        return InjectionBehavior(source: source) { return $0 / value }
     }
     
-    public static func / (lhs: Behavior<Value>, rhs: Behavior<Value>) -> FunctionalBehavior<Value> {
-        let result = FunctionalBehavior<Value>() { computingSpace in
-            let lhs: Value = try computingSpace.find(LHS_KEY)
-            let rhs: Value = try computingSpace.find(RHS_KEY)
-            return lhs / rhs
-        }
-        result.assign(LHS_KEY, member: lhs)
-        result.assign(RHS_KEY, member: rhs)
-        return result
+    public static func / (lhs: Behavior<Value>, rhs: Behavior<Value>) -> Behavior<Value> {
+        return CombineBehavior(source: lhs, source: rhs) { return $0 / $1 }
     }
 }

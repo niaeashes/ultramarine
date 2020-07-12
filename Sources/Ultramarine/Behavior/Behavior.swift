@@ -43,7 +43,7 @@ extension Behavior where Value: Equatable {
     }
 }
 
-// MARK: - The Behavior is a Publisher.
+// MARK: - The Behavior is always a Publisher.
 
 extension Behavior: Publisher {
     
@@ -66,6 +66,7 @@ extension Behavior: Publisher {
 
 extension Behavior {
     
+    @discardableResult
     public func onUpdate(_ completion: @escaping (Value, Cancellable) -> Void) -> Cancellable {
         return subscribe(Subscription<Value>(completion))
     }

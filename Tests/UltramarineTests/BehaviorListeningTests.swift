@@ -18,6 +18,8 @@ class BehaviorListeningTests: XCTestCase {
 
     class Sample {
         @Sub var text = ""
+        
+        func mock() {}
     }
     
     func testBindingOperator() throws {
@@ -50,5 +52,41 @@ class BehaviorListeningTests: XCTestCase {
         
         text <<= "3"
         XCTAssertEqual(sample.text, "3")
+    }
+    
+    func testMemoryLeak1() {
+        
+        let text = "1".continuous
+        weak var target: Behavior<String>? = nil
+        
+        do {
+            let sample = Sample()
+            sample.$text <> text
+            target = sample.$text
+            
+            XCTAssertNotNil(target)
+        }
+
+        XCTAssertNil(target)
+    }
+    
+    func testMemoryLeak2() {
+        
+        let text = "1".continuous
+        weak var target: Sample? = nil
+        
+        do {
+            let holder = Sample()
+            text.onUpdate { [weak holder] value, cancellable in
+                holder?.mock() ?? cancellable.cancel()
+            }
+            
+            target = holder
+            
+            text.set("2")
+            XCTAssertNotNil(target)
+        }
+        
+        XCTAssertNil(target)
     }
 }
