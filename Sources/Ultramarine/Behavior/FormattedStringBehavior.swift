@@ -5,14 +5,50 @@
 
 public class FormattedStringBehavior: Behavior<String> {
     
-    private let format: String
-    private let collection: Dictionary<Int, Behavior<String>>
+    private let source: Array<Element>
+    
+    private enum Element: CustomStringConvertible {
+        case string(String)
+        case token(Behavior<String>)
+        
+        var description: String {
+            switch self {
+            case .string(let value):
+                return value
+            case .token(let string):
+                return string.value
+            }
+        }
+    }
     
     public init(format: String) {
-        self.format = format
-        collection = ReplaceTokenStorage.current?.collection ?? [:]
+        let collection = ReplaceTokenStorage.current?.collection ?? [:]
         
-        super.init("")
+        var source: Array<Element> = [.string(format)]
+        
+        collection.forEach { key, target in
+            
+            let oldSource = source.map { $0 }
+            source = []
+            oldSource.forEach { element in
+                switch element {
+                case .string(let format):
+                    var parts = format.components(separatedBy: "<:-\(key)-:>")
+                    while parts.count > 0 {
+                        source.append(.string(parts.removeFirst()))
+                        if parts.count > 0 {
+                            source.append(.token(target))
+                        }
+                    }
+                default:
+                    source.append(element)
+                }
+            }
+        }
+        
+        self.source = source
+        
+        super.init(source.map { $0.description }.joined())
         
         collection.values.forEach {
             $0.onUpdate { [weak self] _, cancellable in
@@ -23,18 +59,10 @@ public class FormattedStringBehavior: Behavior<String> {
                 }
             }
         }
-        
-        run()
     }
     
     private func run() {
-        var newValue = format
-        
-        collection.forEach { key, string in
-            newValue = newValue.replacingOccurrences(of: "<:-\(key)-:>", with: string.value)
-        }
-        
-        update(newValue)
+        update(source.map { $0.description }.joined())
     }
 }
 

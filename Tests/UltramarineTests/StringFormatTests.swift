@@ -25,16 +25,30 @@ class StringFormatTests: XCTestCase {
     }
     
     func testPerformance() {
+        let a = "Hello".continuous
+        let b = "World".continuous
+        
+        let format = "\(%a), \(%b).".formated
+        
         measure {
-            let a = "Hello".continuous
-            let b = "World".continuous
-            
-            let format = "\(%a), \(%b).".formated
-            
             (0...1000).forEach {
                 a.set("Hello \($0)")
                 b.set("Mr.\(Int.random(in: Int.zero...Int.max))")
                 _ = format.value
+            }
+        }
+        
+    }
+    
+    func testPerformanceControled() {
+        let a = "Hello".continuous
+        let b = "World".continuous
+        
+        measure {
+            (0...1000).forEach {
+                a.set("Hello \($0)")
+                b.set("Mr.\(Int.random(in: Int.zero...Int.max))")
+                _ = "\(a.value), \(b.value)."
             }
         }
     }
