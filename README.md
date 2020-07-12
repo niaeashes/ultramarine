@@ -101,7 +101,7 @@ class LabelViewModel {
 ```
 
 @Pub property wrapper means Publisher.
-The projected value is OpenBehavior that holds updatable value via refresh method and `<<=` operator.
+The projected value is OpenBehavior that holds updatable value via `<<=` operator.
 
 ```swift
 let viewModel = LabelViewModel()
@@ -110,9 +110,6 @@ let label = UILabel()
 viewModel.subscribe(label)
 
 viewModel.text = "updated" // Simple set.
-
-// Use refresh method for projected value.
-viewModel.$text.refresh("updated")
 
 // Use <<= operator.
 viewModel.$text <<= "updated"

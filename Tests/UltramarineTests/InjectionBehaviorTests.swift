@@ -37,13 +37,13 @@ class InjectionBehaviorTests: XCTestCase {
             XCTAssertNotNil(source)
         }
         
-        source?.set(2)
+        source?.value = 2
         XCTAssertNotNil(source)
         XCTAssertEqual(target.value, 4)
         
         target?.cancel() // [!] Release source behavior.
         
-        source?.set(3)
+        source?.value = 3
         XCTAssertNil(source)
         XCTAssertEqual(target.value, 4) // [!] not 6
     }

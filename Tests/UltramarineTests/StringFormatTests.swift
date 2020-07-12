@@ -32,8 +32,8 @@ class StringFormatTests: XCTestCase {
         
         measure {
             (0...1000).forEach {
-                a.set("Hello \($0)")
-                b.set("Mr.\(Int.random(in: Int.zero...Int.max))")
+                a.value = "Hello \($0)"
+                b.value = "Mr.\(Int.random(in: Int.zero...Int.max))"
                 _ = format.value
             }
         }
@@ -46,8 +46,8 @@ class StringFormatTests: XCTestCase {
         
         measure {
             (0...1000).forEach {
-                a.set("Hello \($0)")
-                b.set("Mr.\(Int.random(in: Int.zero...Int.max))")
+                a.value = "Hello \($0)"
+                b.value = "Mr.\(Int.random(in: Int.zero...Int.max))"
                 _ = "\(a.value), \(b.value)."
             }
         }

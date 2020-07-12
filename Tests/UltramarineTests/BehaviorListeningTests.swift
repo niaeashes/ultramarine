@@ -83,7 +83,7 @@ class BehaviorListeningTests: XCTestCase {
             
             target = holder
             
-            text.set("2")
+            text.value = "2"
             XCTAssertNotNil(target)
         }
         

@@ -17,6 +17,6 @@ infix operator <<=: AssignmentPrecedence
 extension OpenBehavior {
     
     public static func <<= (open: OpenBehavior, value: Value) {
-        open.set(value)
+        open.value = value
     }
 }

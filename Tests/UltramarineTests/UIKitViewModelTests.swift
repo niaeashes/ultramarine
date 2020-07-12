@@ -58,11 +58,8 @@ class UIKitViewModelTests: XCTestCase {
         viewModel.text = "updated 1"
         XCTAssertEqual(label.text, "updated 1")
         
-        viewModel.$text.set("updated 2")
+        viewModel.$text <<= "updated 2"
         XCTAssertEqual(label.text, "updated 2")
-        
-        viewModel.$text <<= "updated 3"
-        XCTAssertEqual(label.text, "updated 3")
     }
     
     func testAssignTargetHoldWeakRef() throws {
