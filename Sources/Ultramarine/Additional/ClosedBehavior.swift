@@ -3,19 +3,12 @@
 //  Ultramarine
 //
 
-public final class ClosedBehavior<Value> {
-    
-    public private(set) var value: Value
+public final class ClosedBehavior<Value>: Behavior<Value> {
     
     private lazy var subscriber: PrivateSubscriber<Value> = {
         return PrivateSubscriber(self)
     }()
     private var cancellable: Cancellable? = nil
-    private var subscriptions: Array<Subscription<Value>> = []
-    
-    init(_ initialValue: Value) {
-        self.value = initialValue
-    }
     
     private class PrivateSubscriber<Value>: Subscriber {
         typealias Input = Value
@@ -27,7 +20,7 @@ public final class ClosedBehavior<Value> {
         }
         
         func receive(_ input: Value) {
-            root?.value = input
+            root?.update(input)
             root?.relay()
         }
     }
@@ -46,31 +39,11 @@ public final class ClosedBehavior<Value> {
     }
 }
 
-extension ClosedBehavior: Publisher {
-    
-    public typealias Output = Value
-    
-    public func connect<S>(to subscriber: S) -> Cancellable where S : Subscriber, Output == S.Input {
-        
-        let sub = Subscription<Output> { [weak subscriber] value, cancellable in
-            if let subscriber = subscriber {
-                subscriber.receive(value)
-            } else {
-                cancellable.cancel()
-            }
-        }
-        subscriptions.append(sub)
-        sub.send(self.value)
-        
-        return sub
-    }
-}
-
 // MARK: - Utilities.
 
 extension ClosedBehavior {
     
-    public var nowReceivingValue: Bool {
+    public var nowWatching: Bool {
         return cancellable != nil
     }
 }

@@ -3,16 +3,16 @@
 //  Ultramarine
 //
 
-public final class FunctionalBehavior<Value>: Cancellable {
+public final class FunctionalBehavior<Value>: Behavior<Optional<Value>>, Cancellable {
     
     private var members: Dictionary<String, ValueHolder> = [:]
     private var function: ((FunctionalBehavior<Value>) throws -> Value)?
     private var cancellables: Array<Cancellable> = []
-    private var subscriptions: Array<Subscription<Value>> = []
     private(set) var lastError: Error? = nil
     
     init(_ function: @escaping (FunctionalBehavior<Value>) throws -> Value) {
         self.function = function
+        super.init(nil)
     }
     
     private class ValueHolder: Cancellable {
@@ -53,9 +53,9 @@ public final class FunctionalBehavior<Value>: Cancellable {
     }
     
     public func cancel() {
-        members = [:]
         cancellables.forEach { $0.cancel() }
-        cancellables = []
+        subscriptions.forEach { $0.cancel() }
+        members = [:]
         function = nil
     }
     
@@ -67,7 +67,7 @@ public final class FunctionalBehavior<Value>: Cancellable {
         return lastError != nil
     }
     
-    public var value: Value? {
+    public override var value: Value? {
         do {
             return try function?(self)
         } catch {
@@ -77,12 +77,10 @@ public final class FunctionalBehavior<Value>: Cancellable {
     }
     
     private func relay() {
-        do {
-            let subscriptions = self.subscriptions
-            
-            if let value = self.value {
-                subscriptions.forEach { $0.send(value) }
-            }
+        let subscriptions = self.subscriptions
+        
+        if let value = self.value {
+            subscriptions.forEach { $0.send(value) }
         }
     }
     
@@ -110,28 +108,5 @@ extension FunctionalBehavior {
         } else {
             throw FunctionRuntimeError.notFoundAssignedMember(name: key)
         }
-    }
-}
-
-extension FunctionalBehavior: Publisher {
-    
-    public typealias Output = Value
-    
-    public func connect<S>(to subscriber: S) -> Cancellable where S : Subscriber, Output == S.Input {
-        
-        let sub = Subscription<Output> { [weak subscriber] value, cancellable in
-            if let subscriber = subscriber {
-                subscriber.receive(value)
-            } else {
-                cancellable.cancel()
-            }
-        }
-        subscriptions.append(sub)
-        
-        if let value = self.value {
-            sub.send(value)
-        }
-        
-        return sub
     }
 }

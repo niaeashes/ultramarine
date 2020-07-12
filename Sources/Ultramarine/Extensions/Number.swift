@@ -12,11 +12,11 @@ extension Behavior where Value: AdditiveArithmetic {
     typealias RuntimeError = FunctionalBehavior<Value>.FunctionRuntimeError
     
     public static func += (source: Behavior<Value>, value: Value) {
-        source.set(source.value + value)
+        source.update(source.value + value)
     }
     
     public static func -= (source: Behavior<Value>, value: Value) {
-        source.set(source.value - value)
+        source.update(source.value - value)
     }
     
     public static func + (source: Behavior<Value>, value: Value) -> FunctionalBehavior<Value> {
@@ -63,7 +63,7 @@ extension Behavior where Value: AdditiveArithmetic {
 extension Behavior where Value: Numeric {
     
     public static func *= (source: Behavior<Value>, value: Value) {
-        source.set(source.value * value)
+        source.update(source.value * value)
     }
     
     public static func * (source: Behavior<Value>, value: Value) -> FunctionalBehavior<Value> {
@@ -90,7 +90,7 @@ extension Behavior where Value: Numeric {
 extension Behavior where Value: FloatingPoint {
     
     public static func /= (source: Behavior<Value>, value: Value) {
-        source.set(source.value / value)
+        source.update(source.value / value)
     }
     
     public static func / (source: Behavior<Value>, value: Value) -> FunctionalBehavior<Value> {

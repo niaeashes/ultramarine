@@ -7,14 +7,14 @@
 public struct Pub<Value> {
     
     public init(wrappedValue value: Value) {
-        projectedValue = Behavior<Value>(value)
+        projectedValue = OpenBehavior<Value>(value)
     }
     
-    public var projectedValue: Behavior<Value>
+    public var projectedValue: OpenBehavior<Value>
     
     public var wrappedValue: Value {
         get { return projectedValue.value }
-        set { projectedValue.set(newValue) }
+        set { projectedValue.update(newValue) }
     }
 }
 

@@ -29,10 +29,10 @@ class BehaviorListeningTests: XCTestCase {
         
         sample.$text <> text
         
-        text.receive("2")
+        text.value = "2"
         XCTAssertEqual(sample.text, "2")
         
-        text.receive("3")
+        text.value = "3"
         XCTAssertEqual(sample.text, "3")
     }
     
