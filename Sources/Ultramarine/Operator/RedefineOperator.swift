@@ -34,7 +34,7 @@ extension FormattedStringBehavior {
 extension Event {
     
     @discardableResult
-    static func <> (event:  Event<Payload>, _ definition: (Self) -> Void) -> Event<Payload> {
+    public static func <> (event:  Event<Payload>, _ definition: (Self) -> Void) -> Event<Payload> {
         return event.apply(closure: definition)
     }
 }
