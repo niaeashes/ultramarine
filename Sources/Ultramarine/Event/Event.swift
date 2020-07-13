@@ -25,15 +25,7 @@ extension Event: Publisher {
     
     public typealias Output = Payload
     
-    @discardableResult
-    public func connect<S>(to subscriber: S) -> Cancellable where S : Subscriber, Output == S.Input {
-        
-        return subscribe(Subscription<Output> { [weak subscriber] value, cancellable in
-            if let subscriber = subscriber {
-                subscriber.notify(value)
-            } else {
-                cancellable.cancel()
-            }
-        })
+    public func sink(_ completion: @escaping (Output) -> Void) -> Cancellable {
+        return subscribe(Subscription<Output>() { value, _ in completion(value) })
     }
 }

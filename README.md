@@ -126,21 +126,11 @@ class ViewModel {
     }
 }
 
-class Counter: Subscriber {
-    typealias Input = Void
-
-    private(set) var count = 0
-
-    func notify(_ input: Void) {
-        count += 1
-    }
-}
-
 let viewModel = ViewModel()
-let counter = Counter()
+let count = 0
 
-viewModel.tapEvent.connect(to: counter)
+viewModel.tapEvent.sink { count += 1 }
 
-viewModel.tap() // counter.count = 1
-viewModel.tap() // counter.count = 2
+viewModel.tap() // count = 1
+viewModel.tap() // count = 2
 ```

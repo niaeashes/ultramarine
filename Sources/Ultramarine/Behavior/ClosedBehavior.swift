@@ -5,28 +5,11 @@
 
 public final class ClosedBehavior<Value>: Behavior<Value> {
     
-    private lazy var subscriber: PrivateSubscriber<Value> = {
-        return PrivateSubscriber(self)
-    }()
     private var cancellable: Cancellable? = nil
-    
-    private class PrivateSubscriber<Value>: Subscriber {
-        typealias Input = Value
-        
-        weak var root: ClosedBehavior<Value>?
-        
-        init(_ root: ClosedBehavior<Value>) {
-            self.root = root
-        }
-        
-        func notify(_ input: Value) {
-            root?.update(input)
-        }
-    }
     
     public func watch(to behavior: Behavior<Value>) {
         cancellable?.cancel()
-        cancellable = behavior.connect(to: subscriber)
+        cancellable = behavior.sink { [weak self] value in self?.update(value) }
     }
 }
 

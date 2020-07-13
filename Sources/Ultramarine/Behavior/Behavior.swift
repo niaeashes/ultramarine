@@ -24,7 +24,6 @@ public class Behavior<Value> {
         }
     }
     
-    @discardableResult
     func subscribe(_ subscription: Subscription<Value>) -> Cancellable {
         subscriptions.append(subscription)
         return subscription
@@ -49,16 +48,8 @@ extension Behavior: Publisher {
     
     public typealias Output = Value
     
-    @discardableResult
-    public func connect<S>(to subscriber: S) -> Cancellable where S : Subscriber, Output == S.Input {
-        
-        return subscribe(Subscription<Output> { [weak subscriber] value, cancellable in
-            if let subscriber = subscriber {
-                subscriber.notify(value)
-            } else {
-                cancellable.cancel()
-            }
-        })
+    public func sink(_ completion: @escaping (Output) -> Void) -> Cancellable {
+        return subscribe(Subscription<Output>() { value, _ in completion(value) })
     }
 }
 
@@ -89,19 +80,17 @@ extension Behavior where Output: Continuous {
     public func assign<Root: AnyObject>(to keyPath: ReferenceWritableKeyPath<Root, Output>, on object: Root) -> Cancellable {
         
         let sub = Subscription(to: keyPath, on: object)
-        subscribe(sub)
         sub.send(value)
         
-        return sub
+        return subscribe(sub)
     }
     
     @discardableResult
     public func assign<Root: AnyObject>(to keyPath: ReferenceWritableKeyPath<Root, Optional<Output>>, on object: Root) -> Cancellable {
         
         let sub = Subscription(to: keyPath, on: object)
-        subscribe(sub)
         sub.send(value)
         
-        return sub
+        return subscribe(sub)
     }
 }

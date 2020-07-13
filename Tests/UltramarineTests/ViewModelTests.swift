@@ -46,36 +46,26 @@ class ViewModelTests: XCTestCase {
         }
     }
     
-    class Counter: Subscriber {
-        typealias Input = Void
-        
-        private(set) var count = 0
-        
-        func notify(_ input: Void) {
-            count += 1
-        }
-    }
-    
     func testBasicAssign() throws {
         let viewModel = ButtonViewModel()
         let button = Button()
+        var count = 0
         
         viewModel.subscribe(button)
         
         viewModel.text = "Button Title"
         XCTAssertEqual(button.text, "Button Title")
         
-        let counter = Counter()
-        viewModel.tapEvent.connect(to: counter)
+        _ = viewModel.tapEvent.sink { count += 1 }
         
-        XCTAssertEqual(counter.count, 0)
-        
-        button.tap()
-        XCTAssertEqual(counter.count, 1)
+        XCTAssertEqual(count, 0)
         
         button.tap()
+        XCTAssertEqual(count, 1)
+        
         button.tap()
         button.tap()
-        XCTAssertEqual(counter.count, 4)
+        button.tap()
+        XCTAssertEqual(count, 4)
     }
 }
