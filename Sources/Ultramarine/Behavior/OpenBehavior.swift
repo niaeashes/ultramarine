@@ -7,6 +7,13 @@ public protocol Continuous {
     var continuous: OpenBehavior<Self> { get }
 }
 
+extension Continuous {
+    
+    public var continuous: OpenBehavior<Self> {
+        return OpenBehavior<Self>(self)
+    }
+}
+
 public final class OpenBehavior<Value>: Behavior<Value> {
     
     public override init(_ initialValue: Value) {

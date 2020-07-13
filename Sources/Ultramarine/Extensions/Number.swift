@@ -7,26 +7,21 @@ private let SOURCE_KEY = "source"
 private let LHS_KEY = "left-hand source"
 private let RHS_KEY = "right-hand source"
 
-extension Int: Continuous {
-    
-    public var continuous: OpenBehavior<Self> {
-        return OpenBehavior<Self>(self)
-    }
-}
+extension UInt: Continuous {}
+extension UInt8: Continuous {}
+extension UInt16: Continuous {}
+extension UInt32: Continuous {}
+extension UInt64: Continuous {}
 
-extension Double: Continuous {
-    
-    public var continuous: OpenBehavior<Self> {
-        return OpenBehavior<Self>(self)
-    }
-}
+extension Int: Continuous {}
+extension Int8: Continuous {}
+extension Int16: Continuous {}
+extension Int32: Continuous {}
+extension Int64: Continuous {}
 
-extension Float: Continuous {
-    
-    public var continuous: OpenBehavior<Self> {
-        return OpenBehavior<Self>(self)
-    }
-}
+extension Float32: Continuous {}
+extension Float64: Continuous {}
+extension Float80: Continuous {}
 
 extension Behavior where Value: AdditiveArithmetic {
     

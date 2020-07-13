@@ -1,4 +1,0 @@
-//
-//  Continuous.swift
-//  Ultramarine
-//

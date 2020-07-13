@@ -5,14 +5,15 @@
 
 class Subscription<Input> {
     
-    var handler: ((Input, Cancellable) -> Void)?
+    private var handler: ((Input, Cancellable) -> Void)?
+    private var inProcess = false
     
     init(_ handler: @escaping (Input, Cancellable) -> Void) {
         self.handler = handler
     }
     
-    init<Root: AnyObject>(to keyPath: ReferenceWritableKeyPath<Root, Input>, on object: Root) {
-        self.handler = { [weak object] value, cancellable in
+    convenience init<Root: AnyObject>(to keyPath: ReferenceWritableKeyPath<Root, Input>, on object: Root) {
+        self.init() { [weak object] value, cancellable in
             if let object = object {
                 object[keyPath: keyPath] = value
             } else {
@@ -21,8 +22,8 @@ class Subscription<Input> {
         }
     }
     
-    init<Root: AnyObject>(to keyPath: ReferenceWritableKeyPath<Root, Optional<Input>>, on object: Root) {
-        self.handler = { [weak object] value, cancellable in
+    convenience init<Root: AnyObject>(to keyPath: ReferenceWritableKeyPath<Root, Optional<Input>>, on object: Root) {
+        self.init() { [weak object] value, cancellable in
             if let object = object {
                 object[keyPath: keyPath] = Optional(value)
             } else {
@@ -32,6 +33,11 @@ class Subscription<Input> {
     }
     
     func send(_ input: Input) {
+        if inProcess { return }
+        
+        defer { inProcess = false }
+        inProcess = true
+        
         handler?(input, self)
     }
 }

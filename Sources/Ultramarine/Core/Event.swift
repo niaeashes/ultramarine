@@ -6,10 +6,15 @@
 public class Event<Payload> {
     
     private(set) var subscriptions: Array<Subscription<Payload>> = []
+    private var inProcess = false
     
     public init() {}
     
     public func trigger(_ payload: Payload) {
+        if inProcess == true { return }
+        defer { inProcess = false }
+        inProcess = true
+        
         let subscriptions = self.subscriptions
         subscriptions.forEach { $0.send(payload) }
     }

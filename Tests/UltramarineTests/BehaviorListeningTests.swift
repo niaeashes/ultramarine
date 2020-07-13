@@ -89,4 +89,14 @@ class BehaviorListeningTests: XCTestCase {
         
         XCTAssertNil(target)
     }
+    
+    func testCircularUpdate() {
+        let text = "".continuous
+        let sample = Sample()
+        
+        sample.$text <> text
+        sample.$text.sink { text <<= $0 }
+        
+        text <<= "updated"
+    }
 }

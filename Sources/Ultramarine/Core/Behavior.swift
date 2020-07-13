@@ -29,18 +29,6 @@ public class Behavior<Value> {
     }
 }
 
-extension Behavior where Value: Equatable {
-    
-    func update(_ value: Value) {
-        guard value != self.value else { return }
-        self.value = value
-        do {
-            let subscriptions = self.subscriptions
-            subscriptions.forEach { $0.send(value) }
-        }
-    }
-}
-
 // MARK: - The Behavior is always a Publisher.
 
 extension Behavior: Publisher {
