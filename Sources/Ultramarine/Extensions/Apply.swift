@@ -4,7 +4,7 @@
 
 public extension Behavior {
     
-    func apply(closure: (Self) -> Void) -> Self {
+    public func apply(closure: (Self) -> Void) -> Self {
         closure(self)
         return self
     }
@@ -12,7 +12,7 @@ public extension Behavior {
 
 public extension Event {
     
-    func apply(closure: (Self) -> Void) -> Self {
+    public func apply(closure: (Self) -> Void) -> Self {
         closure(self)
         return self
     }
