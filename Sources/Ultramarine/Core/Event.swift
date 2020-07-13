@@ -24,6 +24,7 @@ extension Event: Publisher {
     
     public typealias Output = Payload
     
+    @discardableResult
     public func sink(_ completion: @escaping (Output) -> Void) -> Cancellable {
         return subscribe(Subscription<Output>() { value, _ in completion(value) })
     }

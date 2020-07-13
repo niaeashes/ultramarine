@@ -47,18 +47,9 @@ extension Behavior: Publisher {
     
     public typealias Output = Value
     
+    @discardableResult
     public func sink(_ completion: @escaping (Output) -> Void) -> Cancellable {
         return subscribe(Subscription<Output>() { value, _ in completion(value) })
-    }
-}
-
-// MARK: - Resgister handler.
-
-extension Behavior {
-    
-    @discardableResult
-    public func onUpdate(_ completion: @escaping (Value, Cancellable) -> Void) -> Cancellable {
-        return subscribe(Subscription<Value>(completion))
     }
 }
 

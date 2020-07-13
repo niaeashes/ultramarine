@@ -77,8 +77,8 @@ class BehaviorListeningTests: XCTestCase {
         
         do {
             let holder = Sample()
-            text.onUpdate { [weak holder] value, cancellable in
-                holder?.mock() ?? cancellable.cancel()
+            text.sink { [weak holder] _ in
+                holder?.mock()
             }
             
             target = holder
