@@ -91,7 +91,8 @@ public class UITapEvent<View: UIView>: Event<View> {
     private var cancellables: Array<Cancellable> = []
     
     public func watch(_ target: View) {
-        let selectorEvent = SelectorEvent() { [weak self] object, cancellable in
+        let selectorEvent = SelectorEvent<UITapGestureRecognizer>() { [weak self] recoginizer, cancellable in
+            guard let object = recoginizer.view as? View else { return }
             self?.trigger(object) ?? cancellable.cancel()
         }
         let recoginizer = UITapGestureRecognizer(target: selectorEvent, action: selectorEvent.selector)
