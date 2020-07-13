@@ -7,6 +7,13 @@ private let SOURCE_KEY = "source"
 private let LHS_KEY = "left-hand source"
 private let RHS_KEY = "right-hand source"
 
+extension Bool: Continuous {
+    
+    public var continuous: OpenBehavior<Bool> {
+        return OpenBehavior<Bool>(self)
+    }
+}
+
 extension Behavior where Value == Bool {
     
     public static prefix func ! (target: Behavior<Value>) -> Behavior<Value> {

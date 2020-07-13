@@ -14,9 +14,9 @@ private extension Int {
 
 public class FormattedStringBehavior: Behavior<String> {
     
-    private let source: Array<Element>
-    
-    private enum Element: CustomStringConvertible {
+    private(set) var source: Array<Element> = []
+
+    enum Element: CustomStringConvertible {
         case string(String)
         case token(Behavior<String>)
         
@@ -31,33 +31,49 @@ public class FormattedStringBehavior: Behavior<String> {
     }
     
     public init(format: String) {
+        super.init("")
+        
+        prepare(format: format)
+        run()
+    }
+    
+    public func replace(format: String) {
+        prepare(format: format)
+        run()
+    }
+    
+    public func replace(format: FormattedStringBehavior) {
+        source = format.source
+        run()
+    }
+    
+    private func prepare(format: String) {
+        defer { ReplaceTokenStorage.current?.clear() }
         let collection = ReplaceTokenStorage.current?.collection ?? [:]
         
-        var source: Array<Element> = [.string(format)]
+        var newSource: Array<Element> = [.string(format)]
         
         collection.forEach { key, target in
             
-            let oldSource = source.map { $0 }
-            source = []
+            let oldSource = newSource.map { $0 }
+            newSource = []
             oldSource.forEach { element in
                 switch element {
                 case .string(let format):
                     var parts = format.components(separatedBy: key.replaceToken)
                     while parts.count > 0 {
-                        source.append(.string(parts.removeFirst()))
+                        newSource.append(.string(parts.removeFirst()))
                         if parts.count > 0 {
-                            source.append(.token(target))
+                            newSource.append(.token(target))
                         }
                     }
                 default:
-                    source.append(element)
+                    newSource.append(element)
                 }
             }
         }
         
-        self.source = source
-        
-        super.init(source.map { $0.description }.joined())
+        self.source = newSource
         
         collection.values.forEach {
             _ = $0.sink { [weak self] _ in self?.run() }

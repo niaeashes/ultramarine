@@ -3,6 +3,10 @@
 //  Ultramarine
 //
 
+public protocol Continuous {
+    var continuous: OpenBehavior<Self> { get }
+}
+
 public final class OpenBehavior<Value>: Behavior<Value> {
     
     public override init(_ initialValue: Value) {

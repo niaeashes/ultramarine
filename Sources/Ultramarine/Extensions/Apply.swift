@@ -2,7 +2,7 @@
 //  File.swift
 //  
 
-public extension Behavior {
+extension Behavior {
     
     public func apply(closure: (Self) -> Void) -> Self {
         closure(self)
@@ -10,7 +10,7 @@ public extension Behavior {
     }
 }
 
-public extension Event {
+extension Event {
     
     public func apply(closure: (Self) -> Void) -> Self {
         closure(self)

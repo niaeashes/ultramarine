@@ -13,18 +13,58 @@ But Ultramarine is:
 
 # Basic
 
+Here's the basic concepts of Ultramarine.
+
+Ultramarine is based on FRP, so I've written a little bit about FRP, but you don't need to know much about it.
+
 ## Behavior
 
 "Behavior" is modeling values that vary over continuous time in FRP.
 
-But Ultramarine defines Behavior as a value that is omnipresent in time.
-It means Behavior always provides value via .value property.
+Specifically, sine waves, current time, and other one-argument functions.
+But this is only a conceptual existence.
+In practice, we don't deal with values that have a smooth continuity beyond the number of clocks on the CPU.
+Ultramarine defines: Behavior as a value that is omnipresent in time.
+
+```swift
+let name = "Alice".continuous // Make open string behavior.
+print(name.value) // "Alice"
+
+name <<= "Bob"
+print(name.value) // "Bob"
+```
+
+Behavior always has the value. You get the value via .value property on each Behaviors.
 
 ## Event
 
-"Event" is Modeling which have occurrences at discrete points in time.
+"Event" is modeling which have occurrences at discrete time in FRP.
 
-Ultramarine defines Event as values that are interspersed in time.
+The most common example of an event is user input.
+In FRP concepts, an Event is a time/value pair. However, Ultramarine defines Events as values that are scattered in time, not necessarily It does not focus on time.
+Unlike Behavior, events disappear when they are used up.
+
+An Event object is like a hole that accepts a value. When the value is raised, it is thrown into Event.
+
+```swift
+let event = Event<Void>()
+
+event.trigger(())
+```
+
+Events have no function by themselves. Add a process that is chained from the event.
+
+```swift
+let event = Event<Void>()
+var counter = 0
+
+event.sink { counter += 1 }
+
+event.trigger(())
+event.trigger(())
+event.trigger(())
+print(counter) // 3
+```
 
 # Usecase
 
@@ -64,18 +104,25 @@ print(hello) // Hello, Alice.
 
 name <<= "Bob"
 print(hello) // Hello, Bob.
-
 ```
 
 `%` prefix operator is replaceable `.replaceToken`.
 
-```
+```swift
 let hello = "Hello, \(name.replaceToken)".format
 ```
 
 `.format` is required.
 If you don't insert `.format`, the replaceToken will be inserted into the string.
 For example: `Hello, <:-0-:>.`
+
+```swift
+// Redefine format
+hello <> "Goodbye, \(%name)." // or use .replace(format:)
+print(hello) // Goodbye, Bob.
+```
+
+`<>` operator means "(re)define" the behavior.
 
 ## ViewModel and View (MVVM Architecture)
 
@@ -115,7 +162,7 @@ viewModel.$text <<= "updated"
 ```swift
 class ViewModel {
     let tapEvent = Event<Void>()
-
+    
     func tap() {
         tapEvent.trigger(Void())
     }
