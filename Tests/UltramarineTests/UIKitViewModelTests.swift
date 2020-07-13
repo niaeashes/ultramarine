@@ -25,16 +25,19 @@ class UIKitViewModelTests: XCTestCase {
         
         @Pub var text = ""
         
-        init() {
-            recoginizer = UITapGestureRecognizer(target: $tapEvent, action: $tapEvent.selector)
-        }
-        
-        @Selectable var tapEvent: Event<UITapGestureRecognizer>
-        var recoginizer: UITapGestureRecognizer! = nil
+        let tapLabelEvent = UITapEvent<UILabel>()
+        let tapButtonEvent = UITapEvent<UIButton>()
         
         func subscribe(_ label: UILabel) {
             $text.assign(to: \UILabel.text, on: label)
-            label.addGestureRecognizer(recoginizer)
+            tapLabelEvent.watch(label)
+        }
+        
+        func subscribe(_ button: UIButton) {
+            if let label = button.titleLabel {
+                $text.assign(to: \UILabel.text, on: label)
+            }
+            tapButtonEvent.watch(button)
         }
     }
     
@@ -79,61 +82,6 @@ class UIKitViewModelTests: XCTestCase {
         }
         
         XCTAssertNil(weakLabel)
-    }
-    
-    func testTapEvent() {
-        let viewModel = LabelViewModel()
-        let label = UILabel()
-        let sub = RecordSubscriber<UITapGestureRecognizer>()
-
-        label.isUserInteractionEnabled = true
-        
-        viewModel.subscribe(label)
-        
-        viewModel.tapEvent.connect(to: sub)
-        
-        label.text = "updated 1"
-        
-        do {
-            XCTAssertNil(sub.last)
-            viewModel.recoginizer.execute()
-            XCTAssertEqual(sub.last, viewModel.recoginizer)
-        }
-    }
-}
-
-// Return type alias
-private typealias TargetActionInfo = [(target: AnyObject, action: Selector)]
-
-// UIGestureRecognizer extension
-private extension UIGestureRecognizer {
-    
-    func getTargetInfo() -> TargetActionInfo {
-        var targetsInfo: TargetActionInfo = []
-        
-        if let targets = self.value(forKeyPath: "_targets") as? [NSObject] {
-            for target in targets {
-                // Getting selector by parsing the description string of a UIGestureRecognizerTarget
-                let selectorString = String.init(describing: target).components(separatedBy: ", ").first!.replacingOccurrences(of: "(action=", with: "")
-                let selector = NSSelectorFromString(selectorString)
-                
-                // Getting target from iVars
-                let targetActionPairClass: AnyClass = NSClassFromString("UIGestureRecognizerTarget")!
-                let targetIvar: Ivar = class_getInstanceVariable(targetActionPairClass, "_target")!
-                let targetObject: AnyObject = object_getIvar(target, targetIvar) as AnyObject
-                
-                targetsInfo.append((target: targetObject, action: selector))
-            }
-        }
-        
-        return targetsInfo
-    }
-    
-    func execute() {
-        let targetsInfo = self.getTargetInfo()
-        for info in targetsInfo {
-            info.target.performSelector(onMainThread: info.action, with: self, waitUntilDone: true)
-        }
     }
 }
 

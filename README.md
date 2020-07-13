@@ -139,7 +139,7 @@ class Counter: Subscriber {
 let viewModel = ViewModel()
 let counter = Counter()
 
-viewModel.tapEvent.connect(postTo: counter)
+viewModel.tapEvent.connect(to: counter)
 
 viewModel.tap() // counter.count = 1
 viewModel.tap() // counter.count = 2
