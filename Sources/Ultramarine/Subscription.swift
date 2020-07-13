@@ -44,3 +44,10 @@ extension Subscription: Cancellable {
     
     public var isCanceled: Bool { handler == nil }
 }
+
+extension Subscription: CustomDebugStringConvertible {
+    
+    public var debugDescription: String {
+        return "+ sub: \(Input.self)"
+    }
+}

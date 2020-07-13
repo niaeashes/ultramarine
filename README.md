@@ -15,21 +15,16 @@ But Ultramarine is:
 
 ## Behavior
 
-"Behavior" is modeling values that vary over continuous time.
+"Behavior" is modeling values that vary over continuous time in FRP.
 
-Ultramarine defines Behavior as a value that is omnipresent in time.
-It means Behavior always provides value via .value property. (Pull)
+But Ultramarine defines Behavior as a value that is omnipresent in time.
+It means Behavior always provides value via .value property.
 
 ## Event
 
 "Event" is Modeling which have occurrences at discrete points in time.
 
 Ultramarine defines Event as values that are interspersed in time.
-
-## Publisher
-
-Publisher sends the values to Subscriber as needed.
-Behavior is always Publisher and notifies Subscribers when the value changes.
 
 # Usecase
 

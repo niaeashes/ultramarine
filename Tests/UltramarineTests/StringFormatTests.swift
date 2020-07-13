@@ -22,6 +22,22 @@ class StringFormatTests: XCTestCase {
         let format = "\(%a), \(%b).".format
         
         XCTAssertEqual(format.value, "Hello, World.")
+        
+        b <<= "Alice"
+        XCTAssertEqual(format.value, "Hello, Alice.")
+        
+        a <<= "Goodbye"
+        XCTAssertEqual(format.value, "Goodbye, Alice.")
+    }
+    
+    func testCustomStringConvertible() {
+        let count = 0.continuous
+        let label = "Tap: \(%count)".format
+        
+        XCTAssertEqual(label.value, "Tap: 0")
+        
+        count += 1
+        XCTAssertEqual(label.value, "Tap: 1")
     }
     
     func testPerformance() {
@@ -37,7 +53,6 @@ class StringFormatTests: XCTestCase {
                 _ = format.value
             }
         }
-        
     }
     
     func testPerformanceControled() {
