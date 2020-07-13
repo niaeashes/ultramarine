@@ -18,20 +18,8 @@ public final class CombineBehavior<A, B, R>: Behavior<R> {
         
         super.init(handler(a.value, b.value))
         
-        cancellables.append(sourceA.onUpdate { [weak self] _, cancellable in
-            if let self = self {
-                self.run()
-            } else {
-                cancellable.cancel()
-            }
-        })
-        cancellables.append(sourceB.onUpdate { [weak self] _, cancellable in
-            if let self = self {
-                self.run()
-            } else {
-                cancellable.cancel()
-            }
-        })
+        cancellables.append(sourceA.sink { [weak self] _ in self?.run() })
+        cancellables.append(sourceB.sink { [weak self] _ in self?.run() })
     }
     
     private func run() {

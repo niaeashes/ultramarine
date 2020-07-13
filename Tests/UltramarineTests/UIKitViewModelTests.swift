@@ -25,30 +25,8 @@ class UIKitViewModelTests: XCTestCase {
         
         @Pub var text = ""
         
-        let tapLabelEvent = UITapEvent<UILabel>()
-        let tapButtonEvent = UITapEvent<UIButton>()
-        
         func subscribe(_ label: UILabel) {
             $text.assign(to: \UILabel.text, on: label)
-            tapLabelEvent.watch(label)
-        }
-        
-        func subscribe(_ button: UIButton) {
-            if let label = button.titleLabel {
-                $text.assign(to: \UILabel.text, on: label)
-            }
-            tapButtonEvent.watch(button)
-        }
-    }
-    
-    class RecordSubscriber<Input>: Subscriber {
-        
-        typealias Input = Input
-        
-        private(set) var last: Input? = nil
-        
-        func notify(_ input: Input) {
-            last = input
         }
     }
     

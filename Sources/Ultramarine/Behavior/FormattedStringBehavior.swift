@@ -3,6 +3,15 @@
 //  
 //
 
+import Foundation
+
+private let TOKEN_PREFIX = "<:"
+private let TOKEN_POSTFIX = ":>"
+
+private extension Int {
+    var replaceToken: String { "\(TOKEN_PREFIX)\(self)\(TOKEN_POSTFIX)"}
+}
+
 public class FormattedStringBehavior: Behavior<String> {
     
     private let source: Array<Element>
@@ -33,7 +42,7 @@ public class FormattedStringBehavior: Behavior<String> {
             oldSource.forEach { element in
                 switch element {
                 case .string(let format):
-                    var parts = format.components(separatedBy: "<:-\(key)-:>")
+                    var parts = format.components(separatedBy: key.replaceToken)
                     while parts.count > 0 {
                         source.append(.string(parts.removeFirst()))
                         if parts.count > 0 {
@@ -51,13 +60,7 @@ public class FormattedStringBehavior: Behavior<String> {
         super.init(source.map { $0.description }.joined())
         
         collection.values.forEach {
-            $0.onUpdate { [weak self] _, cancellable in
-                if let self = self {
-                    self.run()
-                } else {
-                    cancellable.cancel()
-                }
-            }
+            _ = $0.sink { [weak self] _ in self?.run() }
         }
     }
     
@@ -82,7 +85,7 @@ private class ReplaceTokenStorage {
         
         collection[key] = source
         
-        return "<:-\(key)-:>"
+        return key.replaceToken
     }
     
     func clear() {

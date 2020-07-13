@@ -1,6 +1,5 @@
 //
 //  ContinuousBehavior.swift
-//  Ultramarine
 //
 
 ///
@@ -9,8 +8,6 @@
 public class Behavior<Value> {
     
     public private(set) var value: Value
-    
-    private(set) var subscriptions: Array<Subscription<Value>> = []
     
     init(_ initialValue: Value) {
         self.value = initialValue
@@ -23,6 +20,8 @@ public class Behavior<Value> {
             subscriptions.forEach { $0.send(value) }
         }
     }
+    
+    private(set) var subscriptions: Array<Subscription<Value>> = []
     
     func subscribe(_ subscription: Subscription<Value>) -> Cancellable {
         subscriptions.append(subscription)

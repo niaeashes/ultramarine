@@ -26,7 +26,7 @@ It means Behavior always provides value via .value property. (Pull)
 
 Ultramarine defines Event as values that are interspersed in time.
 
-## Publisher / Subscriber
+## Publisher
 
 Publisher sends the values to Subscriber as needed.
 Behavior is always Publisher and notifies Subscribers when the value changes.

@@ -14,7 +14,6 @@ public class Event<Payload> {
         subscriptions.forEach { $0.send(payload) }
     }
     
-    @discardableResult
     func subscribe(_ subscription: Subscription<Payload>) -> Cancellable {
         subscriptions.append(subscription)
         return subscription

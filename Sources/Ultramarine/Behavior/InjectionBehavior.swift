@@ -16,13 +16,7 @@ public final class InjectionBehavior<S, R>: Behavior<R> {
         
         super.init(handler(source.value))
         
-        cancellables.append(source.onUpdate { [weak self] _, cancellable in
-            if let self = self {
-                self.run()
-            } else {
-                cancellable.cancel()
-            }
-        })
+        cancellables.append(source.sink { [weak self] _ in self?.run() })
     }
     
     private func run() {
