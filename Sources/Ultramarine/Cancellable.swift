@@ -12,7 +12,7 @@ public protocol Cancellable {
 
 extension Cancellable {
     
-    func append(to collection: inout Array<Cancellable>) {
+    public func append(to collection: inout Array<Cancellable>) {
         collection.append(self)
     }
 }
