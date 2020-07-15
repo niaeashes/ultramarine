@@ -13,6 +13,7 @@ extension ClosedBehavior {
         return destination
     }
 }
+
 extension ClosedBehavior where Value == String {
     
     @discardableResult
@@ -27,6 +28,15 @@ extension FormattedStringBehavior {
     @discardableResult
     public static func <> (destination: FormattedStringBehavior, newFormat: String) -> FormattedStringBehavior {
         destination.replace(format: newFormat)
+        return destination
+    }
+}
+
+extension MemoryBehavior {
+    
+    @discardableResult
+    public static func <> (destination: MemoryBehavior<Value>, event: Event<Value>) -> MemoryBehavior<Value> {
+        destination.watch(to: event)
         return destination
     }
 }

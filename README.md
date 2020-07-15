@@ -176,3 +176,35 @@ viewModel.tapEvent.sink { count += 1 }
 viewModel.tap() // count = 1
 viewModel.tap() // count = 2
 ```
+
+## Connect between event and behavior.
+
+There are several ways to connect Behavior and Events.
+Simple implementing is by `sink`
+
+```swift
+let number = 0.continuous
+let numberEvent = Event<Int>()
+
+numberEvent.sink { [weak number] value in number? <<= value }
+```
+
+A better way is to use `MemoryBehavior`.
+This is a Behavior that keeps track of the last value sent by the Event.
+`MemoryBehavior` has `nil` as default value.
+
+```swift
+let numberMemory = MemoryBehavior<Int>()
+let ticketEvent = Event<Int>()
+
+print(numberMemory.value) // nil
+
+numberMemory.watch(to: ticketEvent)
+
+ticketEvent.trigger(484848)
+print(numberMemory.value) // 484848
+
+numberMemory.cancel()
+ticketEvent.trigger(818181)
+print(numberMemory.value) // also, 484848
+```

@@ -25,3 +25,18 @@ public final class OpenBehavior<Value>: Behavior<Value> {
         set { update(newValue) }
     }
 }
+
+@propertyWrapper
+public struct Pub<Value> {
+    
+    public init(wrappedValue value: Value) {
+        projectedValue = OpenBehavior<Value>(value)
+    }
+    
+    public var projectedValue: OpenBehavior<Value>
+    
+    public var wrappedValue: Value {
+        get { return projectedValue.value }
+        set { projectedValue.update(newValue) }
+    }
+}
