@@ -18,20 +18,20 @@ class MemoryBehaviorTests: XCTestCase {
     
     func testBasic() throws {
         let numberMemory = MemoryBehavior<Int>()
-        let ticketEvent = Event<Int>()
+        let ticketSignal = Signal<Int>()
         
         XCTAssertNil(numberMemory.value)
         
-        ticketEvent.trigger(101010)
+        ticketSignal.fire(101010)
         XCTAssertNil(numberMemory.value)
         
-        numberMemory.watch(to: ticketEvent)
+        numberMemory.watch(to: ticketSignal)
         
-        ticketEvent.trigger(484848)
+        ticketSignal.fire(484848)
         XCTAssertEqual(numberMemory.value, 484848)
         
         numberMemory.cancel()
-        ticketEvent.trigger(818181)
+        ticketSignal.fire(818181)
         XCTAssertEqual(numberMemory.value, 484848)
     }
     
@@ -40,10 +40,10 @@ class MemoryBehaviorTests: XCTestCase {
         weak var checker: AnyObject? = nil
         
         do {
-            let ticketEvent = Event<Int>()
-            checker = ticketEvent
+            let ticketSignal = Signal<Int>()
+            checker = ticketSignal
             
-            numberMemory.watch(to: ticketEvent)
+            numberMemory.watch(to: ticketSignal)
             
             XCTAssertNotNil(checker)
         }
@@ -58,10 +58,10 @@ class MemoryBehaviorTests: XCTestCase {
         
         do {
             let numberMemory = MemoryBehavior<Int>()
-            let ticketEvent = Event<Int>()
-            checker = ticketEvent
+            let ticketSignal = Signal<Int>()
+            checker = ticketSignal
             
-            numberMemory.watch(to: ticketEvent)
+            numberMemory.watch(to: ticketSignal)
             
             XCTAssertNotNil(checker)
         }

@@ -1,21 +1,21 @@
 //
-//  WatershedEvent.swift
+//  WatershedSignal.swift
 //  
 //
 
-public class WatershedEvent<Success, Failure: Error>: Event<Result<Success, Failure>> {
+public class ResultSignal<Success, Failure: Error>: Signal<Result<Success, Failure>> {
     
-    public let succeed = Event<Success>()
-    public let failed = Event<Failure>()
+    public let succeed = Signal<Success>()
+    public let failed = Signal<Failure>()
     
     public override init() {
         super.init()
         
         _ = subscribe(Subscription<Output>() { [weak succeed] payload, cancellable in
-            if let event = succeed {
+            if let signal = succeed {
                 switch payload {
                 case .success(let value):
-                    event.trigger(value)
+                    signal.fire(value)
                 default:
                     break
                 }
@@ -25,10 +25,10 @@ public class WatershedEvent<Success, Failure: Error>: Event<Result<Success, Fail
         })
         
         _ = subscribe(Subscription<Output>() { [weak failed] payload, cancellable in
-            if let event = failed {
+            if let signal = failed {
                 switch payload {
                 case .failure(let value):
-                    event.trigger(value)
+                    signal.fire(value)
                 default:
                     break
                 }
@@ -39,10 +39,10 @@ public class WatershedEvent<Success, Failure: Error>: Event<Result<Success, Fail
     }
     
     public func success(_ value: Success) {
-        trigger(.success(value))
+        fire(.success(value))
     }
     
     public func failure(_ value: Failure) {
-        trigger(.failure(value))
+        fire(.failure(value))
     }
 }

@@ -8,16 +8,16 @@ public class MemoryBehavior<Value>: Behavior<Value?> {
     public typealias Payload = Value
     
     private var cancellable: Cancellable? = nil
-    private var source: Event<Payload>!
+    private var source: Signal<Payload>!
     
     public init() {
         super.init(nil)
     }
     
-    public func watch(to event: Event<Payload>) {
-        source = event
+    public func watch(to signal: Signal<Payload>) {
+        source = signal
         cancellable?.cancel()
-        cancellable = event.subscribe(Subscription<Value>() { [weak self] value, cancellable in
+        cancellable = signal.subscribe(Subscription<Value>() { [weak self] value, cancellable in
             if let self = self {
                 self.update(value)
             } else {
@@ -41,7 +41,7 @@ extension MemoryBehavior: Cancellable {
 }
 
 @propertyWrapper
-public struct EventMemory<Value> {
+public struct SignalMemory<Value> {
     
     public init() {
         projectedValue = MemoryBehavior<Value>()

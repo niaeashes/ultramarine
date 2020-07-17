@@ -10,7 +10,7 @@ extension Behavior {
     }
 }
 
-extension Event {
+extension Signal {
     
     public func apply(closure: (Self) -> Void) -> Self {
         closure(self)

@@ -35,16 +35,16 @@ extension FormattedStringBehavior {
 extension MemoryBehavior {
     
     @discardableResult
-    public static func <> (destination: MemoryBehavior<Value>, event: Event<Value>) -> MemoryBehavior<Value> {
-        destination.watch(to: event)
+    public static func <> (destination: MemoryBehavior<Value>, signal: Signal<Value>) -> MemoryBehavior<Value> {
+        destination.watch(to: signal)
         return destination
     }
 }
 
-extension Event {
+extension Signal {
     
     @discardableResult
-    public static func <> (event:  Event<Payload>, _ definition: (Self) -> Void) -> Event<Payload> {
-        return event.apply(closure: definition)
+    public static func <> (signal:  Signal<Payload>, _ definition: (Self) -> Void) -> Signal<Payload> {
+        return signal.apply(closure: definition)
     }
 }

@@ -76,6 +76,6 @@ extension Behavior where Output: Continuous {
 extension Behavior: CustomDebugStringConvertible {
     
     public var debugDescription: String {
-        (["[\(type(of: self))] = \"\(value)\" with \(subscriptions.count) subscriptions"] + subscriptions.map { "  " + $0.debugDescription }).joined(separator: "\n")
+        (["[\(type(of: self))] = \"\(value)\" with \(subscriptions.count) subscriptions"] + subscriptions.map { "  -> " + $0.debugDescription }).joined(separator: "\n")
     }
 }

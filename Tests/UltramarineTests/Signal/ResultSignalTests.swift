@@ -1,12 +1,12 @@
 //
-//  WatershedEventTests.swift
+//  WatershedSignalTests.swift
 //  UltramarineTests
 //
 
 import XCTest
 import Ultramarine
 
-class WatershedEventTests: XCTestCase {
+class WatershedSignalTests: XCTestCase {
     
     override func setUpWithError() throws {
         // Put setup code here. This method is called before the invocation of each test method in the class.
@@ -19,19 +19,19 @@ class WatershedEventTests: XCTestCase {
     class SampleError: Error {}
     
     func testBasic() throws {
-        let event = WatershedEvent<Int, SampleError>()
+        let signal = ResultSignal<Int, SampleError>()
         var successCounter = 0
         var failureCounter = 0
         
-        event.succeed
+        signal.succeed
             .sink { _ in successCounter += 1 }
         
-        event.failed
+        signal.failed
             .sink { _ in failureCounter += 1 }
         
-        event.success(10)
-        event.success(10)
-        event.failure(SampleError())
+        signal.success(10)
+        signal.success(10)
+        signal.failure(SampleError())
         
         XCTAssertEqual(successCounter, 2)
         XCTAssertEqual(failureCounter, 1)

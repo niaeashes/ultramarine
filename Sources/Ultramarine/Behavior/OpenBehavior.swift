@@ -14,7 +14,7 @@ extension Continuous {
     }
 }
 
-public final class OpenBehavior<Value>: Behavior<Value> {
+public class OpenBehavior<Value>: Behavior<Value> {
     
     public override init(_ initialValue: Value) {
         super.init(initialValue)

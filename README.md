@@ -36,33 +36,31 @@ print(name.value) // "Bob"
 
 Behavior always has the value. You get the value via .value property on each Behaviors.
 
-## Event
+## Signal
 
-"Event" is modeling which have occurrences at discrete time in FRP.
+Ultramarine defines Signals as values that are scattered in time, not necessarily It does not focus on time.
+Unlike Behavior, signals disappear when they are used up.
+(In FRP, this concept is called an Event.)
 
-The most common example of an event is user input.
-In FRP concepts, an Event is a time/value pair. However, Ultramarine defines Events as values that are scattered in time, not necessarily It does not focus on time.
-Unlike Behavior, events disappear when they are used up.
-
-An Event object is like a hole that accepts a value. When the value is raised, it is thrown into Event.
+An Signal object is like a hole that accepts a value. When the value is raised, it is thrown into Signal.
 
 ```swift
-let event = Event<Void>()
+let signal = Signal<Void>()
 
-event.trigger(())
+signal.fire(())
 ```
 
-Events have no function by themselves. Add a process that is chained from the event.
+Signals have no function by themselves. Add a process that is chained from the signal.
 
 ```swift
-let event = Event<Void>()
+let signal = Signal<Void>()
 var counter = 0
 
-event.sink { counter += 1 }
+signal.sink { counter += 1 }
 
-event.trigger(())
-event.trigger(())
-event.trigger(())
+signal.fire(())
+signal.fire(())
+signal.fire(())
 print(counter) // 3
 ```
 
@@ -157,54 +155,54 @@ viewModel.text = "updated" // Simple set.
 viewModel.$text <<= "updated"
 ```
 
-## Event: Simple counter and tap event.
+## Signal: Simple counter and tap signal.
 
 ```swift
 class ViewModel {
-    let tapEvent = Event<Void>()
+    let tapSignal = Signal<Void>()
     
     func tap() {
-        tapEvent.trigger(Void())
+        tapSignal.fire(Void())
     }
 }
 
 let viewModel = ViewModel()
 let count = 0
 
-viewModel.tapEvent.sink { count += 1 }
+viewModel.tapSignal.sink { count += 1 }
 
 viewModel.tap() // count = 1
 viewModel.tap() // count = 2
 ```
 
-## Connect between event and behavior.
+## Connect between signal and behavior.
 
-There are several ways to connect Behavior and Events.
+There are several ways to connect Behavior and Signals.
 Simple implementing is by `sink`
 
 ```swift
 let number = 0.continuous
-let numberEvent = Event<Int>()
+let numberSignal = Signal<Int>()
 
-numberEvent.sink { [weak number] value in number? <<= value }
+numberSignal.sink { [weak number] value in number? <<= value }
 ```
 
 A better way is to use `MemoryBehavior`.
-This is a Behavior that keeps track of the last value sent by the Event.
+This is a Behavior that keeps track of the last value sent by the Signal.
 `MemoryBehavior` has `nil` as default value.
 
 ```swift
 let numberMemory = MemoryBehavior<Int>()
-let ticketEvent = Event<Int>()
+let ticketSignal = Signal<Int>()
 
 print(numberMemory.value) // nil
 
-numberMemory.watch(to: ticketEvent)
+numberMemory.watch(to: ticketSignal)
 
-ticketEvent.trigger(484848)
+ticketSignal.fire(484848)
 print(numberMemory.value) // 484848
 
 numberMemory.cancel()
-ticketEvent.trigger(818181)
+ticketSignal.fire(818181)
 print(numberMemory.value) // also, 484848
 ```

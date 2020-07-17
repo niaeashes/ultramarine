@@ -1,16 +1,16 @@
 //
-//  Event.swift
+//  Signal.swift
 //  Ultramarine
 //
 
-public class Event<Payload> {
+public class Signal<Payload> {
     
     private(set) var subscriptions: Array<Subscription<Payload>> = []
     private var inProcess = false
     
     public init() {}
     
-    public func trigger(_ payload: Payload) {
+    public func fire(_ payload: Payload) {
         if inProcess == true { return }
         defer { inProcess = false }
         inProcess = true
@@ -19,18 +19,18 @@ public class Event<Payload> {
         subscriptions.forEach { $0.send(payload) }
     }
     
-    public func map<Value>(_ handler: @escaping (Output) -> Value) -> Event<Value> {
-        let nextEvent = Event<Value>()
-        _ = subscribe(Subscription<Output>() { [nextEvent] value, _ in nextEvent.trigger(handler(value)) })
-        return nextEvent
+    public func map<Value>(_ handler: @escaping (Output) -> Value) -> Signal<Value> {
+        let nextSignal = Signal<Value>()
+        _ = subscribe(Subscription<Output>() { [nextSignal] value, _ in nextSignal.fire(handler(value)) })
+        return nextSignal
     }
     
-    public func filter(_ handler: @escaping (Output) -> Bool) -> Event<Output> {
-        let nextEvent = Event<Output>()
-        _ = subscribe(Subscription<Output>() { [nextEvent] value, _ in
-            if handler(value) { nextEvent.trigger(value) }
+    public func filter(_ handler: @escaping (Output) -> Bool) -> Signal<Output> {
+        let nextSignal = Signal<Output>()
+        _ = subscribe(Subscription<Output>() { [nextSignal] value, _ in
+            if handler(value) { nextSignal.fire(value) }
         })
-        return nextEvent
+        return nextSignal
     }
     
     func subscribe(_ subscription: Subscription<Payload>) -> Cancellable {
@@ -39,7 +39,7 @@ public class Event<Payload> {
     }
 }
 
-extension Event: Publisher {
+extension Signal: Publisher {
     
     public typealias Output = Payload
     
