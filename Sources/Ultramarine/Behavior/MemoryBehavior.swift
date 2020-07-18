@@ -17,13 +17,7 @@ public class MemoryBehavior<Value>: Behavior<Value?> {
     public func watch(to signal: Signal<Payload>) {
         source = signal
         cancellable?.cancel()
-        cancellable = signal.subscribe(Subscription<Value>() { [weak self] value, cancellable in
-            if let self = self {
-                self.update(value)
-            } else {
-                cancellable.cancel()
-            }
-        })
+        cancellable = signal.sink { [weak self] value in self?.update(value) }
     }
     
     public var isNowWatching: Bool { cancellable != nil }

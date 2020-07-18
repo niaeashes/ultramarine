@@ -77,7 +77,7 @@ class BehaviorListeningTests: XCTestCase {
         
         do {
             let holder = Sample()
-            text.sink { [weak holder] _ in
+            text.signal.sink { [weak holder] _ in
                 holder?.mock()
             }
             
@@ -95,7 +95,7 @@ class BehaviorListeningTests: XCTestCase {
         let sample = Sample()
         
         sample.$text <> text
-        sample.$text.sink { text <<= $0 }
+        sample.$text.signal.sink { text <<= $0 }
         
         text <<= "updated"
     }

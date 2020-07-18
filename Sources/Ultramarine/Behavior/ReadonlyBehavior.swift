@@ -1,9 +1,9 @@
 //
-//  ClosedBehavior.swift
+//  ReadonlyBehavior.swift
 //  Ultramarine
 //
 
-public final class ClosedBehavior<Value>: Behavior<Value> {
+public final class ReadonlyBehavior<Value>: Behavior<Value> {
     
     private var cancellable: Cancellable? = nil
     private var source: Behavior<Value>!
@@ -11,19 +11,17 @@ public final class ClosedBehavior<Value>: Behavior<Value> {
     public func watch(to behavior: Behavior<Value>) {
         source = behavior
         cancellable?.cancel()
-        cancellable = behavior.subscribe(Subscription<Value>() { [weak self] value, cancellable in
-            if let self = self {
-                self.update(value)
-            } else {
-                cancellable.cancel()
-            }
-        })
+        cancellable = behavior.chain { [weak self] in self?.refresh() }
+    }
+    
+    func refresh() {
+        update(source.value)
     }
     
     public var isNowWatching: Bool { cancellable != nil }
 }
 
-extension ClosedBehavior: Cancellable {
+extension ReadonlyBehavior: Cancellable {
     
     public func cancel() {
         source = nil
@@ -38,10 +36,10 @@ extension ClosedBehavior: Cancellable {
 public struct Sub<Value> {
     
     public init(wrappedValue value: Value) {
-        projectedValue = ClosedBehavior<Value>(value)
+        projectedValue = ReadonlyBehavior<Value>(value)
     }
     
-    public var projectedValue: ClosedBehavior<Value>
+    public var projectedValue: ReadonlyBehavior<Value>
     
     public var wrappedValue: Value {
         get { return projectedValue.value }

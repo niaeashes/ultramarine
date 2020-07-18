@@ -3,12 +3,7 @@
 //  Ultramarine
 //
 
-extension String: Continuous {
-    
-    public var continuous: OpenBehavior<String> {
-        OpenBehavior<String>(self)
-    }
-}
+extension String: Continuous {}
 
 prefix operator %
 

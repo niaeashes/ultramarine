@@ -2,12 +2,24 @@
 //  ContinuousBehavior.swift
 //
 
+private let SINGLE_SIGNAL_KEY = "single"
+
 ///
 /// Behavior is an object that always has a value.
 ///
 public class Behavior<Value> {
     
     public private(set) var value: Value
+    public var signal: Signal<Value> {
+        singleSignal = singleSignal ?? Signal<Value>()
+        return singleSignal!
+    }
+    
+    var signalHolder: Dictionary<String, AnyObject> = [:]
+    private var singleSignal: Signal<Value>? {
+        get { signalHolder[SINGLE_SIGNAL_KEY] as? Signal<Value> }
+        set { signalHolder[SINGLE_SIGNAL_KEY] = newValue }
+    }
     
     init(_ initialValue: Value) {
         self.value = initialValue
@@ -15,33 +27,33 @@ public class Behavior<Value> {
     
     func update(_ value: Value) {
         self.value = value
+        updated()
+    }
+    
+    func updated() {
+        
+        singleSignal?.fire(value)
+        
         do {
             let subscriptions = self.subscriptions
-            subscriptions.forEach { $0.send(value) }
+            subscriptions.forEach { $0.execute(value) }
         }
     }
     
     private(set) var subscriptions: Array<Subscription<Value>> = []
     
-    func subscribe(_ subscription: Subscription<Value>) -> Cancellable {
+    func subscribe(_ subscription: Subscription<Value>) -> Subscription<Value> {
         subscriptions.append(subscription)
         return subscription
     }
-}
-
-// MARK: - The Behavior is always a Publisher.
-
-extension Behavior: Publisher {
-    
-    public typealias Output = Value
     
     @discardableResult
-    public func sink(_ completion: @escaping (Output) -> Void) -> Cancellable {
-        return subscribe(Subscription<Output>() { value, _ in completion(value) })
+    func chain(_ handler: @escaping () -> Void) -> Cancellable {
+        return subscribe(Subscription<Value>() { _, _ in handler() })
     }
 }
 
-// MARK - CustomStringConvertible Behavior.
+// MARK: - CustomStringConvertible Behavior.
 
 extension Behavior: CustomStringConvertible where Value: CustomStringConvertible {
     
@@ -50,26 +62,77 @@ extension Behavior: CustomStringConvertible where Value: CustomStringConvertible
     }
 }
 
-// MARK - Assignable Behavior.
+// MARK: - Collection Behavior.
 
-extension Behavior where Output: Continuous {
+private let APPENDED_SIGNAL_KEY = "appended"
+private let REMOVED_SIGNAL_KEY = "removed"
+
+extension Behavior where Value: Collection {
     
-    @discardableResult
-    public func assign<Root: AnyObject>(to keyPath: ReferenceWritableKeyPath<Root, Output>, on object: Root) -> Cancellable {
-        
-        let sub = Subscription(to: keyPath, on: object)
-        sub.send(value)
-        
-        return subscribe(sub)
+    public subscript(_ position: Value.Index) -> Value.Element? {
+        value.indices.contains(position) ? value[position] : nil
+    }
+}
+
+extension Behavior where Value: RangeReplaceableCollection {
+    
+    public var appended: Signal<Value.Element> {
+        appendedSignal = appendedSignal ?? Signal<Value.Element>()
+        return appendedSignal!
+    }
+    
+    private var appendedSignal: Signal<Value.Element>? {
+        get { signalHolder[APPENDED_SIGNAL_KEY] as? Signal<Value.Element> }
+        set { signalHolder[APPENDED_SIGNAL_KEY] = newValue }
+    }
+    
+    public var removed: Signal<Value.Element> {
+        removedSignal = removedSignal ?? Signal<Value.Element>()
+        return removedSignal!
+    }
+    
+    private var removedSignal: Signal<Value.Element>? {
+        get { signalHolder[REMOVED_SIGNAL_KEY] as? Signal<Value.Element> }
+        set { signalHolder[REMOVED_SIGNAL_KEY] = newValue }
+    }
+    
+    public func append(_ newElement: Value.Element) {
+        defer {
+            appendedSignal?.fire(newElement)
+            updated()
+        }
+        value.append(newElement)
     }
     
     @discardableResult
-    public func assign<Root: AnyObject>(to keyPath: ReferenceWritableKeyPath<Root, Optional<Output>>, on object: Root) -> Cancellable {
+    public func remove(at i: Value.Index) -> Value.Element {
+        let element = value.remove(at: i)
         
-        let sub = Subscription(to: keyPath, on: object)
-        sub.send(value)
+        removedSignal?.fire(element)
+        updated()
         
-        return subscribe(sub)
+        return element
+    }
+    
+    public func filter(_ isIncluded: @escaping (Value.Element) -> Bool) -> Behavior<Value> {
+        InjectionBehavior<Value, Value>(source: self) { $0.filter(isIncluded) }
+    }
+}
+
+// MARK - Assignable Behavior.
+
+extension Behavior {
+    
+    @discardableResult
+    public func assign<Root: AnyObject>(to keyPath: ReferenceWritableKeyPath<Root, Value>, on object: Root) -> Cancellable {
+        
+        return subscribe(Subscription(to: keyPath, on: object)).execute(value)
+    }
+    
+    @discardableResult
+    public func assign<Root: AnyObject>(to keyPath: ReferenceWritableKeyPath<Root, Optional<Value>>, on object: Root) -> Cancellable {
+        
+        return subscribe(Subscription(to: keyPath, on: object)).execute(value)
     }
 }
 

@@ -114,14 +114,6 @@ let hello = "Hello, \(name.replaceToken)".format
 If you don't insert `.format`, the replaceToken will be inserted into the string.
 For example: `Hello, <:-0-:>.`
 
-```swift
-// Redefine format
-hello <> "Goodbye, \(%name)." // or use .replace(format:)
-print(hello) // Goodbye, Bob.
-```
-
-`<>` operator means "(re)define" the behavior.
-
 ## ViewModel and View (MVVM Architecture)
 
 ViewModel created in Ultramarine makes it easy to bind values to a View.

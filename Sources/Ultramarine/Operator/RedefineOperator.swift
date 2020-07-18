@@ -5,29 +5,20 @@
 
 infix operator <>: AssignmentPrecedence
 
-extension ClosedBehavior {
+extension ReadonlyBehavior {
     
     @discardableResult
-    public static func <> (destination: ClosedBehavior<Value>, source: Behavior<Value>) -> ClosedBehavior<Value> {
+    public static func <> (destination: ReadonlyBehavior<Value>, source: Behavior<Value>) -> ReadonlyBehavior<Value> {
         destination.watch(to: source)
         return destination
     }
 }
 
-extension ClosedBehavior where Value == String {
+extension ReadonlyBehavior where Value == String {
     
     @discardableResult
-    public static func <> <Source: CustomStringConvertible>(destination: ClosedBehavior<Value>, source: Behavior<Source>) -> ClosedBehavior<Value> {
+    public static func <> <Source: CustomStringConvertible>(destination: ReadonlyBehavior<Value>, source: Behavior<Source>) -> ReadonlyBehavior<Value> {
         destination.watch(to: InjectionBehavior(source: source) { $0.description })
-        return destination
-    }
-}
-
-extension FormattedStringBehavior {
-    
-    @discardableResult
-    public static func <> (destination: FormattedStringBehavior, newFormat: String) -> FormattedStringBehavior {
-        destination.replace(format: newFormat)
         return destination
     }
 }
@@ -44,7 +35,7 @@ extension MemoryBehavior {
 extension Signal {
     
     @discardableResult
-    public static func <> (signal:  Signal<Payload>, _ definition: (Self) -> Void) -> Signal<Payload> {
+    public static func <> (signal: Signal<Payload>, _ definition: (Self) -> Void) -> Signal<Payload> {
         return signal.apply(closure: definition)
     }
 }

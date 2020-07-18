@@ -11,7 +11,7 @@ public class ResultSignal<Success, Failure: Error>: Signal<Result<Success, Failu
     public override init() {
         super.init()
         
-        _ = subscribe(Subscription<Output>() { [weak succeed] payload, cancellable in
+        subscribe(Subscription<Output>() { [weak succeed] payload, cancellable in
             if let signal = succeed {
                 switch payload {
                 case .success(let value):
@@ -24,7 +24,7 @@ public class ResultSignal<Success, Failure: Error>: Signal<Result<Success, Failu
             }
         })
         
-        _ = subscribe(Subscription<Output>() { [weak failed] payload, cancellable in
+        subscribe(Subscription<Output>() { [weak failed] payload, cancellable in
             if let signal = failed {
                 switch payload {
                 case .failure(let value):

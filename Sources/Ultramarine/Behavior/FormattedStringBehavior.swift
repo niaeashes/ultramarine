@@ -5,8 +5,8 @@
 
 import Foundation
 
-private let TOKEN_PREFIX = "<:"
-private let TOKEN_POSTFIX = ":>"
+private let TOKEN_PREFIX = "<--"
+private let TOKEN_POSTFIX = "-->"
 
 private extension Int {
     var replaceToken: String { "\(TOKEN_PREFIX)\(self)\(TOKEN_POSTFIX)"}
@@ -15,7 +15,7 @@ private extension Int {
 public class FormattedStringBehavior: Behavior<String> {
     
     private(set) var source: Array<Element> = []
-
+    
     enum Element: CustomStringConvertible {
         case string(String)
         case token(Behavior<String>)
@@ -34,16 +34,6 @@ public class FormattedStringBehavior: Behavior<String> {
         super.init("")
         
         prepare(format: format)
-        run()
-    }
-    
-    public func replace(format: String) {
-        prepare(format: format)
-        run()
-    }
-    
-    public func replace(format: FormattedStringBehavior) {
-        source = format.source
         run()
     }
     
@@ -75,9 +65,7 @@ public class FormattedStringBehavior: Behavior<String> {
         
         self.source = newSource
         
-        collection.values.forEach {
-            _ = $0.sink { [weak self] _ in self?.run() }
-        }
+        collection.values.forEach { $0.chain { [weak self] in self?.run() } }
     }
     
     private func run() {
