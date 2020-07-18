@@ -87,14 +87,14 @@ extension Subject where Value: RangeReplaceableCollection {
 
 extension Subject {
     
-    public func assign<Root: AnyObject>(to keyPath: ReferenceWritableKeyPath<Root, Value>, on object: Root) {
-        sign { [weak object] in object?[keyPath: keyPath] = $0 }
-        object[keyPath: keyPath] = value
+    public func assign<Root: AnyObject>(to keyPath: ReferenceWritableKeyPath<Root, Value>, on object: Root) -> Cancellable {
+        defer { object[keyPath: keyPath] = value}
+        return sign { [weak object] in object?[keyPath: keyPath] = $0 }
     }
     
-    public func assign<Root: AnyObject>(to keyPath: ReferenceWritableKeyPath<Root, Optional<Value>>, on object: Root) {
-        sign { [weak object] in object?[keyPath: keyPath] = $0 }
-        object[keyPath: keyPath] = value
+    public func assign<Root: AnyObject>(to keyPath: ReferenceWritableKeyPath<Root, Optional<Value>>, on object: Root) -> Cancellable {
+        defer { object[keyPath: keyPath] = value}
+        return sign { [weak object] in object?[keyPath: keyPath] = $0 }
     }
 }
 
