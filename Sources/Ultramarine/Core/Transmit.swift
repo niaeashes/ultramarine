@@ -68,4 +68,21 @@ extension Transmit {
     public func sink(_ completion: @escaping (Value) -> Void) -> Cancellable {
         sign(completion)
     }
+    
+    ///
+    /// When the value is received, call the object's method.
+    ///
+    /// Unlike the `sink` method, the `action` method does not register the target object as a weak Reference. For example, the following code is equivalent
+    /// ~~~
+    /// signal.sink { [weak receiver] in receiver.update($0) }
+    /// signal.register(Receiver.update, on: receiver)
+    /// ~~~
+    ///
+    public func action<Root: AnyObject>(_ action: @escaping (Root) -> (Value) -> Void, on object: Root) {
+        
+        sign { [weak object] in
+            guard let object = object else { return }
+            action(object)($0)
+        }
+    }
 }

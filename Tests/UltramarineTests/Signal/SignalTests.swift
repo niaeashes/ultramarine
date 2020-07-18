@@ -65,6 +65,32 @@ class SignalTests: XCTestCase {
         XCTAssertEqual(counter, "123")
     }
     
+    func testActionRedister() {
+        
+        class Receiver {
+            var last: Int = 0
+            func update(_ value: Int) {
+                self.last = value
+            }
+        }
+        
+        let signal = Int.signal()
+        weak var checker: AnyObject? = nil
+        
+        do {
+            let receiver = Receiver()
+            
+            signal.action(Receiver.update, on: receiver)
+            checker = receiver
+            
+            XCTAssertNotEqual(receiver.last, 321321)
+            signal.fire(321321)
+            XCTAssertEqual(receiver.last, 321321)
+        }
+        
+        XCTAssertNil(checker)
+    }
+    
     func testMemoryLeak() {
         
         do { //Filter
