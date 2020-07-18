@@ -18,8 +18,8 @@ extension Subject where Value: CustomStringConvertible {
     }
 }
 
-private let TOKEN_PREFIX = "<\u{1A}"
-private let TOKEN_POSTFIX = ">\u{1A}"
+private let TOKEN_PREFIX = "\u{1A}<"
+private let TOKEN_POSTFIX = "\u{1A}>"
 
 private extension Int {
     var replaceToken: String { "\(TOKEN_PREFIX)\(self)\(TOKEN_POSTFIX)"}
@@ -27,13 +27,9 @@ private extension Int {
 
 // MARK: - Formatted String.
 
-public class FormattedStringSubject: Transmit<String> {
+class FormattedStringSubject: Subject<String> {
     
     private(set) var source: Array<Element> = []
-    
-    public private(set) var value: String = "" {
-        didSet { relay(value) }
-    }
     
     enum Element: CustomStringConvertible {
         case string(String)
@@ -50,7 +46,7 @@ public class FormattedStringSubject: Transmit<String> {
     }
     
     public init(format: String) {
-        super.init()
+        super.init("")
         
         prepare(format: format)
         update()
@@ -118,7 +114,7 @@ private class ReplaceTokenStorage {
 
 extension String {
     
-    public func format() -> FormattedStringSubject {
+    public func format() -> Subject<String> {
         defer { ReplaceTokenStorage.current?.clear() }
         return FormattedStringSubject(format: self)
     }

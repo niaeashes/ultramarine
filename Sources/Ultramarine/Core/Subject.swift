@@ -46,16 +46,6 @@ final class SignalBox {
     }
 }
 
-// MARK: - Writable.
-
-public final class WritableSubject<Value>: Subject<Value> {
-    
-    public override var value: Value {
-        get { super.value }
-        set { super.value = newValue }
-    }
-}
-
 // MARK: - Collection.
 
 private let APPENDED_SIGNAL_KEY = "appended"
@@ -89,7 +79,15 @@ extension Subject where Value: RangeReplaceableCollection {
     }
 }
 
-// MARK: - Value Assignment Operator.
+// MARK: - Writable.
+
+public final class WritableSubject<Value>: Subject<Value> {
+    
+    public override var value: Value {
+        get { super.value }
+        set { super.value = newValue }
+    }
+}
 
 infix operator <<=: AssignmentPrecedence
 
