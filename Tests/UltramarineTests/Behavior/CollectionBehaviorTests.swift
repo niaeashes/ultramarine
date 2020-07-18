@@ -17,7 +17,7 @@ class CollectionBehaviorTests: XCTestCase {
     }
     
     func testSubscript() throws {
-        let collection = Subject<Array<Int>>([])
+        let collection = WritableSubject<Array<Int>>([])
         
         collection.value.append(1)
         XCTAssertEqual(collection[0], 1)
@@ -29,7 +29,7 @@ class CollectionBehaviorTests: XCTestCase {
     }
     
     func testAppendedSignal() throws {
-        let collection = Subject<Array<Int>>([])
+        let collection = WritableSubject<Array<Int>>([])
         var appendedNumber = 0
         
         collection.appended.sink { appendedNumber = $0 }
@@ -44,7 +44,7 @@ class CollectionBehaviorTests: XCTestCase {
     }
     
     func testRemovedSignal() throws {
-        let collection = Subject<Array<Int>>([1, 2, 3])
+        let collection = WritableSubject<Array<Int>>([1, 2, 3])
         var removedNumber = 0
         
         collection.removed.sink { removedNumber = $0 }

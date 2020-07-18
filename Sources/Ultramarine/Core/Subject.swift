@@ -11,7 +11,7 @@ public class Subject<Value>: Transmit<Value> {
         self.value = initialValue
     }
     
-    public var value: Value {
+    public internal(set) var value: Value {
         didSet { relay(value) }
     }
     
@@ -46,7 +46,17 @@ final class SignalBox {
     }
 }
 
-// MARK: - Collection
+// MARK: - Writable.
+
+public final class WritableSubject<Value>: Subject<Value> {
+    
+    public override var value: Value {
+        get { super.value }
+        set { super.value = newValue }
+    }
+}
+
+// MARK: - Collection.
 
 private let APPENDED_SIGNAL_KEY = "appended"
 private let REMOVED_SIGNAL_KEY = "removed"
@@ -83,9 +93,9 @@ extension Subject where Value: RangeReplaceableCollection {
 
 infix operator <<=: AssignmentPrecedence
 
-extension Subject {
+extension WritableSubject {
     
-    public static func <<= (subject: Subject, value: Value) {
+    public static func <<= (subject: WritableSubject, value: Value) {
         subject.value = value
     }
 }
