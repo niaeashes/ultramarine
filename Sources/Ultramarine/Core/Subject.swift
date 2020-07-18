@@ -11,7 +11,7 @@ public class Subject<Value>: Transmit<Value> {
         self.value = initialValue
     }
     
-    public internal(set) var value: Value {
+    public var value: Value {
         didSet { relay(value) }
     }
     
@@ -77,6 +77,10 @@ extension Subject where Value: RangeReplaceableCollection {
     public subscript(index: Value.Index) -> Value.Element? {
         value.indices.contains(index) ? value[index] : nil
     }
+    
+    public func count() -> Subject<Int> {
+        Subject.transform(source: self) { $0.count }
+    }
 }
 
 // MARK: - Assign to another object.
@@ -94,21 +98,13 @@ extension Subject {
     }
 }
 
-// MARK: - Writable.
-
-public final class WritableSubject<Value>: Subject<Value> {
-    
-    public override var value: Value {
-        get { super.value }
-        set { super.value = newValue }
-    }
-}
+// MARK: - Assign value operator.
 
 infix operator <<=: AssignmentPrecedence
 
-extension WritableSubject {
+extension Subject {
     
-    public static func <<= (subject: WritableSubject, value: Value) {
+    public static func <<= (subject: Subject, value: Value) {
         subject.value = value
     }
 }
