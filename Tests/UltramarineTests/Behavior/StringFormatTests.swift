@@ -16,10 +16,10 @@ class StringFormatTests: XCTestCase {
     }
     
     func testBasic() {
-        let a = "Hello".continuous
-        let b = "World".continuous
+        let a = "Hello".subject()
+        let b = "World".subject()
         
-        let format = "\(%a), \(%b).".format
+        let format = "\(%a), \(%b).".format()
         
         XCTAssertEqual(format.value, "Hello, World.")
         
@@ -31,8 +31,8 @@ class StringFormatTests: XCTestCase {
     }
     
     func testCustomStringConvertible() {
-        let count = 0.continuous
-        let label = "Tap: \(%count)".format
+        let count = 0.subject()
+        let label = "Tap: \(%count)".format()
         
         XCTAssertEqual(label.value, "Tap: 0")
         
@@ -41,10 +41,10 @@ class StringFormatTests: XCTestCase {
     }
     
     func testPerformance() {
-        let a = "Hello".continuous
-        let b = "World".continuous
+        let a = "Hello".subject()
+        let b = "World".subject()
         
-        let format = "\(%a), \(%b).".format
+        let format = "\(%a), \(%b).".format()
         
         measure {
             (0...1000).forEach {
@@ -59,8 +59,8 @@ class StringFormatTests: XCTestCase {
         weak var checker: AnyObject! = nil
         
         do {
-            let name = "World".continuous
-            let format = "Hello, \(%name).".format
+            let name = "World".subject()
+            let format = "Hello, \(%name).".format()
             checker = name
             XCTAssertEqual(format.value, "Hello, World.")
             XCTAssertNotNil(checker)
@@ -68,4 +68,12 @@ class StringFormatTests: XCTestCase {
         
         XCTAssertNil(checker)
     }
+    
+    func testReplaceToken() {
+        let name = "Alice".subject()
+        let format = "<0>: \(%name)".format()
+        
+        XCTAssertEqual(format.value, "<0>: Alice")
+    }
+    
 }

@@ -17,7 +17,7 @@ class NumberExpressionTests: XCTestCase {
     }
     
     func testAddOperator() throws {
-        let a = 1.continuous
+        let a = 1.subject()
         
         let b = a + 10
         
@@ -42,7 +42,7 @@ class NumberExpressionTests: XCTestCase {
     }
     
     func testMinusOperator() throws {
-        let a = 1.continuous
+        let a = 1.subject()
         
         let b = a - 10
         

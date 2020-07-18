@@ -17,8 +17,8 @@ class BoolExpressionTests: XCTestCase {
     }
     
     func testAnd() throws {
-        let isBird = false.continuous
-        let isMale = false.continuous
+        let isBird = false.subject()
+        let isMale = false.subject()
         
         let isMaleBird = isBird && isMale
         
@@ -36,8 +36,8 @@ class BoolExpressionTests: XCTestCase {
     }
     
     func testOr() throws {
-        let isLoadingA = false.continuous
-        let isLoadingB = false.continuous
+        let isLoadingA = false.subject()
+        let isLoadingB = false.subject()
         
         let isNowLoading = isLoadingA || isLoadingB
         
@@ -57,7 +57,7 @@ class BoolExpressionTests: XCTestCase {
     }
     
     func testNot() throws {
-        let isHead = true.continuous
+        let isHead = true.subject()
         let isTail = !isHead
         
         XCTAssertTrue(isHead.value)

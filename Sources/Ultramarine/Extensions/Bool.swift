@@ -7,23 +7,21 @@ private let SOURCE_KEY = "source"
 private let LHS_KEY = "left-hand source"
 private let RHS_KEY = "right-hand source"
 
-extension Bool: Continuous {}
-
-extension Behavior where Value == Bool {
+extension Subject where Value == Bool {
     
     public func toggle() {
-        update(!value)
+        value = !value
     }
     
-    public static prefix func ! (target: Behavior<Value>) -> Behavior<Value> {
-        return InjectionBehavior(source: target) { return !$0 }
+    public static prefix func ! (target: Subject<Value>) -> Subject<Value> {
+        return Subject.transform(source: target) { !$0 }
     }
     
-    public static func || (lhs: Behavior<Value>, rhs: Behavior<Value>) -> Behavior<Value> {
-        return CombineBehavior(source: lhs, source: rhs) { return $0 || $1 }
+    public static func || (lhs: Subject<Value>, rhs: Subject<Value>) -> Subject<Value> {
+        return Subject.combine(source: lhs, source: rhs) { return $0 || $1 }
     }
     
-    public static func && (lhs: Behavior<Value>, rhs: Behavior<Value>) -> Behavior<Value> {
-        return CombineBehavior(source: lhs, source: rhs) { return $0 && $1 }
+    public static func && (lhs: Subject<Value>, rhs: Subject<Value>) -> Subject<Value> {
+        return Subject.combine(source: lhs, source: rhs) { return $0 && $1 }
     }
 }

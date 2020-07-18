@@ -3,79 +3,59 @@
 //  Ultramarine
 //
 
-private let SOURCE_KEY = "source"
-private let LHS_KEY = "left-hand source"
-private let RHS_KEY = "right-hand source"
-
-extension UInt: Continuous {}
-extension UInt8: Continuous {}
-extension UInt16: Continuous {}
-extension UInt32: Continuous {}
-extension UInt64: Continuous {}
-
-extension Int: Continuous {}
-extension Int8: Continuous {}
-extension Int16: Continuous {}
-extension Int32: Continuous {}
-extension Int64: Continuous {}
-
-extension Float32: Continuous {}
-extension Float64: Continuous {}
-extension Float80: Continuous {}
-
-extension Behavior where Value: AdditiveArithmetic {
+extension Subject where Value: AdditiveArithmetic {
     
-    public static func += (source: Behavior<Value>, value: Value) {
-        source.update(source.value + value)
+    public static func += (source: Subject<Value>, value: Value) {
+        source.value = source.value + value
     }
     
-    public static func -= (source: Behavior<Value>, value: Value) {
-        source.update(source.value - value)
+    public static func -= (source: Subject<Value>, value: Value) {
+        source.value = source.value - value
     }
     
-    public static func + (source: Behavior<Value>, value: Value) -> Behavior<Value> {
-        return InjectionBehavior(source: source) { return $0 + value }
+    public static func + (source: Subject<Value>, value: Value) -> Subject<Value> {
+        return Subject.transform(source: source) { $0 + value }
     }
     
-    public static func - (source: Behavior<Value>, value: Value) -> Behavior<Value> {
-        return InjectionBehavior(source: source) { return $0 - value }
+    public static func - (source: Subject<Value>, value: Value) -> Subject<Value> {
+        return Subject.transform(source: source) { $0 - value }
     }
     
-    public static func + (lhs: Behavior<Value>, rhs: Behavior<Value>) -> Behavior<Value> {
-        return CombineBehavior(source: lhs, source: rhs) { return $0 + $1 }
+    public static func + (lhs: Subject<Value>, rhs: Subject<Value>) -> Subject<Value> {
+        return Subject.combine(source: lhs, source: rhs) { $0 + $1 }
     }
     
-    public static func - (lhs: Behavior<Value>, rhs: Behavior<Value>) -> Behavior<Value> {
-        return CombineBehavior(source: lhs, source: rhs) { return $0 - $1 }
+    public static func - (lhs: Subject<Value>, rhs: Subject<Value>) -> Subject<Value> {
+        return Subject.combine(source: lhs, source: rhs) { $0 - $1 }
     }
 }
 
-extension Behavior where Value: Numeric {
+extension Subject where Value: Numeric {
     
-    public static func *= (source: Behavior<Value>, value: Value) {
-        source.update(source.value * value)
+    public static func *= (source: Subject<Value>, value: Value) {
+        source.value = source.value * value
     }
     
-    public static func * (source: Behavior<Value>, value: Value) -> Behavior<Value> {
-        return InjectionBehavior(source: source) { return $0 * value }
+    public static func * (source: Subject<Value>, value: Value) -> Subject<Value> {
+        return Subject.transform(source: source) { $0 * value }
     }
     
-    public static func * (lhs: Behavior<Value>, rhs: Behavior<Value>) -> Behavior<Value> {
-        return CombineBehavior(source: lhs, source: rhs) { return $0 * $1 }
+    public static func * (lhs: Subject<Value>, rhs: Subject<Value>) -> Subject<Value> {
+        return Subject.combine(source: lhs, source: rhs) { $0 * $1 }
     }
 }
 
-extension Behavior where Value: FloatingPoint {
+extension Subject where Value: FloatingPoint {
     
-    public static func /= (source: Behavior<Value>, value: Value) {
-        source.update(source.value / value)
+    public static func /= (source: Subject<Value>, value: Value) {
+        source.value = source.value / value
     }
     
-    public static func / (source: Behavior<Value>, value: Value) -> Behavior<Value> {
-        return InjectionBehavior(source: source) { return $0 / value }
+    public static func / (source: Subject<Value>, value: Value) -> Subject<Value> {
+        return Subject.transform(source: source) { $0 / value }
     }
     
-    public static func / (lhs: Behavior<Value>, rhs: Behavior<Value>) -> Behavior<Value> {
-        return CombineBehavior(source: lhs, source: rhs) { return $0 / $1 }
+    public static func / (lhs: Subject<Value>, rhs: Subject<Value>) -> Subject<Value> {
+        return Subject.combine(source: lhs, source: rhs) { $0 / $1 }
     }
 }
