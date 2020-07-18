@@ -78,7 +78,8 @@ extension Transmit {
     /// signal.register(Receiver.update, on: receiver)
     /// ~~~
     ///
-    public func action<Root: AnyObject>(_ action: @escaping (Root) -> (Value) -> Void, on object: Root) {
+    @discardableResult
+    public func action<Root: AnyObject>(_ action: @escaping (Root) -> (Value) -> Void, on object: Root) -> Cancellable {
         
         sign { [weak object] in
             guard let object = object else { return }
