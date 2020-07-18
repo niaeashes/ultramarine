@@ -6,9 +6,11 @@
 class Upstream<Input>: Cancellable {
     
     private var handler: ((Input) -> Void)?
+    private weak var owner: CancellableOwner?
     
-    init(_ handler: @escaping (Input) -> Void) {
+    init(_ handler: @escaping (Input) -> Void, owner: CancellableOwner? = nil) {
         self.handler = handler
+        self.owner = owner
     }
     
     func send(_ input: Input) {
@@ -17,6 +19,7 @@ class Upstream<Input>: Cancellable {
     
     public func cancel() {
         handler = nil
+        owner?.cancel(target: self)
     }
     
     public var isCanceled: Bool { handler == nil }

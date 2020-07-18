@@ -28,7 +28,7 @@ extension Transmit {
     
     @discardableResult
     func sign(_ upstream: @escaping (Value) -> Void) -> Upstream<Value> {
-        let upstream = Upstream<Value>(upstream)
+        let upstream = Upstream<Value>(upstream, owner: self)
         upstreams.append(upstream)
         return upstream
     }
@@ -84,6 +84,18 @@ extension Transmit {
         sign { [weak object] in
             guard let object = object else { return }
             action(object)($0)
+        }
+    }
+}
+
+// MARK: - Cancellable.
+
+extension Transmit: CancellableOwner {
+    
+    func cancel(target: Cancellable) {
+        
+        if let index = upstreams.firstIndex(where: { $0 === target }) {
+            upstreams.remove(at: index)
         }
     }
 }

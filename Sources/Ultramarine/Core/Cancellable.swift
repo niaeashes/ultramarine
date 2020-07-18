@@ -3,11 +3,16 @@
 //  Ultramarine
 //
 
-public protocol Cancellable {
+public protocol Cancellable: AnyObject {
     
     var isCanceled: Bool { get }
     
     func cancel()
+}
+
+protocol CancellableOwner: AnyObject {
+    
+    func cancel(target: Cancellable)
 }
 
 extension Cancellable {
