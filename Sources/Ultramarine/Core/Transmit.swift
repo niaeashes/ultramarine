@@ -20,6 +20,10 @@ public class Transmit<Value> {
         upstreams.forEach { $0.cancel() }
         upstreams = []
     }
+    
+    public func clean() {
+        upstreams = upstreams.map { !$0.isCanceled }
+    }
 }
 
 // MARK: - Upstreams control.
