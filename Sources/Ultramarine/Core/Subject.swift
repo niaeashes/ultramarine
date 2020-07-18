@@ -85,6 +85,7 @@ extension Subject {
     
     public func assign<Root: AnyObject>(to keyPath: ReferenceWritableKeyPath<Root, Value>, on object: Root) {
         sign { [weak object] in object?[keyPath: keyPath] = $0 }
+        object[keyPath: keyPath] = value
     }
 }
 
