@@ -18,7 +18,7 @@ class MemoryBehaviorTests: XCTestCase {
     
     func testBasic() throws {
         let numberMemory = MemoryBehavior<Int>()
-        let ticketSignal = Signal<Int>.plug
+        let ticketSignal = Signal<Int>()
         
         XCTAssertNil(numberMemory.value)
         
@@ -40,7 +40,7 @@ class MemoryBehaviorTests: XCTestCase {
         weak var checker: AnyObject? = nil
         
         do {
-            let ticketSignal = Signal<Int>.plug
+            let ticketSignal = Signal<Int>()
             checker = ticketSignal
             
             numberMemory.watch(to: ticketSignal)
@@ -58,7 +58,7 @@ class MemoryBehaviorTests: XCTestCase {
         
         do {
             let numberMemory = MemoryBehavior<Int>()
-            let ticketSignal = Signal<Int>.plug
+            let ticketSignal = Signal<Int>()
             checker = ticketSignal
             
             numberMemory.watch(to: ticketSignal)

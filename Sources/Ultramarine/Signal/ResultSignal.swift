@@ -4,7 +4,7 @@
 //  
 //
 
-public class ResultSignal<Success, Failure: Error>: Signal<Result<Success, Failure>> {
+public final class ResultSignal<Success, Failure: Error>: Signal<Result<Success, Failure>> {
     
     public let succeed = Signal<Success>()
     public let failed = Signal<Failure>()
@@ -37,10 +37,6 @@ public class ResultSignal<Success, Failure: Error>: Signal<Result<Success, Failu
                 cancellable.cancel()
             }
         })
-    }
-    
-    public override func fire(_ payload: Result<Success, Failure>) {
-        super.fire(payload)
     }
     
     public func success(_ value: Success) {

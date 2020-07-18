@@ -8,13 +8,13 @@ public class MemoryBehavior<Value>: Behavior<Value?> {
     public typealias Payload = Value
     
     private var cancellable: Cancellable? = nil
-    private var source: Signal<Payload>!
+    private var source: SignalStream<Payload>!
     
     public init() {
         super.init(nil)
     }
     
-    public func watch(to signal: Signal<Payload>) {
+    public func watch(to signal: SignalStream<Payload>) {
         source = signal
         cancellable?.cancel()
         cancellable = signal.sink { [weak self] value in self?.update(value) }

@@ -198,3 +198,5 @@ numberMemory.cancel()
 ticketSignal.fire(818181)
 print(numberMemory.value) // also, 484848
 ```
+
+## Collection Behavior.

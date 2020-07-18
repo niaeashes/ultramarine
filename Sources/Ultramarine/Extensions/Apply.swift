@@ -10,7 +10,7 @@ extension Behavior {
     }
 }
 
-extension Signal {
+extension SignalStream {
     
     public func apply(closure: (Self) -> Void) -> Self {
         closure(self)

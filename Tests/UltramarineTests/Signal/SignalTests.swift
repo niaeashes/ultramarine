@@ -17,7 +17,7 @@ class SignalTests: XCTestCase {
     }
     
     func testBasic() throws {
-        let signal = Signal<Void>.plug
+        let signal = Signal<Void>()
         var counter = 0
         
         signal.sink { counter += 1 }
@@ -28,7 +28,7 @@ class SignalTests: XCTestCase {
     }
     
     func testFilter() throws {
-        let signal = Signal<Int>.plug
+        let signal = Signal<Int>()
         var counter = 0
         
         let sub = signal
@@ -47,7 +47,7 @@ class SignalTests: XCTestCase {
     }
     
     func testMap() throws {
-        let signal = Signal<Int>.plug
+        let signal = Signal<Int>()
         var counter = ""
         
         let sub = signal
@@ -69,10 +69,10 @@ class SignalTests: XCTestCase {
         
         do { //Filter
             var counter = 0
-            weak var checker: Signal<Int>? = nil
+            weak var checker: SignalStream<Int>? = nil
             
             do {
-                let signal = Signal<Int>.plug
+                let signal = Signal<Int>()
                 let filter = signal.filter { $0 % 2 == 0 }
                 _ = filter.sink { _ in counter += 1 }
                 checker = filter
@@ -88,10 +88,10 @@ class SignalTests: XCTestCase {
         
         do { // Map
             var counter = ""
-            weak var checker: Signal<String>? = nil
+            weak var checker: SignalStream<String>? = nil
             
             do {
-                let signal = Signal<Int>.plug
+                let signal = Signal<Int>()
                 let map = signal.map { "\($0)" }
                 _ = map.sink { counter += $0 }
                 checker = map

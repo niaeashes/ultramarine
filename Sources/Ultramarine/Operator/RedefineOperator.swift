@@ -26,16 +26,16 @@ extension ReadonlyBehavior where Value == String {
 extension MemoryBehavior {
     
     @discardableResult
-    public static func <> (destination: MemoryBehavior<Value>, signal: Signal<Value>) -> MemoryBehavior<Value> {
+    public static func <> (destination: MemoryBehavior<Value>, signal: SignalStream<Value>) -> MemoryBehavior<Value> {
         destination.watch(to: signal)
         return destination
     }
 }
 
-extension Signal {
+extension SignalStream {
     
     @discardableResult
-    public static func <> (signal: Signal<Payload>, _ definition: (Self) -> Void) -> Signal<Payload> {
+    public static func <> (signal: SignalStream<Payload>, _ definition: (Self) -> Void) -> SignalStream<Payload> {
         return signal.apply(closure: definition)
     }
 }

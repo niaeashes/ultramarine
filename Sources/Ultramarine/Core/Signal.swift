@@ -3,7 +3,9 @@
 //  Ultramarine
 //
 
-public class Signal<Payload> {
+// MARK: - SignalStream.
+
+public class SignalStream<Payload> {
     
     private(set) var subscriptions: Array<Subscription<Payload>> = []
     private var inProcess = false
@@ -24,22 +26,22 @@ public class Signal<Payload> {
     }
 }
 
-extension Signal {
+extension SignalStream {
     
     public typealias Output = Payload
     
-    public func map<Value>(_ handler: @escaping (Output) -> Value) -> Signal<Value> {
-        let nextSignal = Signal<Value>()
-        subscribe(Subscription<Output>() { [nextSignal] value, _ in nextSignal.fire(handler(value)) })
-        return nextSignal
+    public func map<Value>(_ handler: @escaping (Output) -> Value) -> SignalStream<Value> {
+        let nextStream = SignalStream<Value>()
+        subscribe(Subscription<Output>() { [nextStream] value, _ in nextStream.fire(handler(value)) })
+        return nextStream
     }
     
-    public func filter(_ handler: @escaping (Output) -> Bool) -> Signal<Output> {
-        let nextSignal = Signal<Output>()
-        subscribe(Subscription<Output>() { [nextSignal] value, _ in
-            if handler(value) { nextSignal.fire(value) }
+    public func filter(_ handler: @escaping (Output) -> Bool) -> SignalStream<Output> {
+        let nextStream = SignalStream<Output>()
+        subscribe(Subscription<Output>() { [nextStream] value, _ in
+            if handler(value) { nextStream.fire(value) }
         })
-        return nextSignal
+        return nextStream
     }
     
     @discardableResult
@@ -48,18 +50,13 @@ extension Signal {
     }
 }
 
-// MARK: - Plug.
+// MARK: - Signal.
 
-public final class Plug<Payload>: Signal<Payload> {
+public class Signal<Payload>: SignalStream<Payload> {
     
     public override init() {}
     
     public override func fire(_ payload: Payload) {
         super.fire(payload)
     }
-}
-
-extension Signal {
-    
-    public static var plug: Plug<Payload> { Plug<Payload>() }
 }

@@ -10,14 +10,14 @@ private let SINGLE_SIGNAL_KEY = "single"
 public class Behavior<Value> {
     
     public private(set) var value: Value
-    public var signal: Signal<Value> {
-        singleSignal = singleSignal ?? Signal<Value>()
-        return singleSignal!
+    public var signal: SignalStream<Value> {
+        singleStream = singleStream ?? SignalStream<Value>()
+        return singleStream!
     }
     
     var signalHolder: Dictionary<String, AnyObject> = [:]
-    private var singleSignal: Signal<Value>? {
-        get { signalHolder[SINGLE_SIGNAL_KEY] as? Signal<Value> }
+    private var singleStream: SignalStream<Value>? {
+        get { signalHolder[SINGLE_SIGNAL_KEY] as? SignalStream<Value> }
         set { signalHolder[SINGLE_SIGNAL_KEY] = newValue }
     }
     
@@ -32,7 +32,7 @@ public class Behavior<Value> {
     
     func updated() {
         
-        singleSignal?.fire(value)
+        singleStream?.fire(value)
         
         do {
             let subscriptions = self.subscriptions
@@ -76,29 +76,29 @@ extension Behavior where Value: Collection {
 
 extension Behavior where Value: RangeReplaceableCollection {
     
-    public var appended: Signal<Value.Element> {
-        appendedSignal = appendedSignal ?? Signal<Value.Element>()
-        return appendedSignal!
+    public var appended: SignalStream<Value.Element> {
+        appendedStream = appendedStream ?? SignalStream<Value.Element>()
+        return appendedStream!
     }
     
-    private var appendedSignal: Signal<Value.Element>? {
-        get { signalHolder[APPENDED_SIGNAL_KEY] as? Signal<Value.Element> }
+    private var appendedStream: SignalStream<Value.Element>? {
+        get { signalHolder[APPENDED_SIGNAL_KEY] as? SignalStream<Value.Element> }
         set { signalHolder[APPENDED_SIGNAL_KEY] = newValue }
     }
     
-    public var removed: Signal<Value.Element> {
-        removedSignal = removedSignal ?? Signal<Value.Element>()
-        return removedSignal!
+    public var removed: SignalStream<Value.Element> {
+        removedStream = removedStream ?? SignalStream<Value.Element>()
+        return removedStream!
     }
     
-    private var removedSignal: Signal<Value.Element>? {
-        get { signalHolder[REMOVED_SIGNAL_KEY] as? Signal<Value.Element> }
+    private var removedStream: SignalStream<Value.Element>? {
+        get { signalHolder[REMOVED_SIGNAL_KEY] as? SignalStream<Value.Element> }
         set { signalHolder[REMOVED_SIGNAL_KEY] = newValue }
     }
     
     public func append(_ newElement: Value.Element) {
         defer {
-            appendedSignal?.fire(newElement)
+            appendedStream?.fire(newElement)
             updated()
         }
         value.append(newElement)
@@ -108,7 +108,7 @@ extension Behavior where Value: RangeReplaceableCollection {
     public func remove(at i: Value.Index) -> Value.Element {
         let element = value.remove(at: i)
         
-        removedSignal?.fire(element)
+        removedStream?.fire(element)
         updated()
         
         return element
