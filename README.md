@@ -200,3 +200,28 @@ print(numberMemory.value) // also, 484848
 ```
 
 ## Collection Behavior.
+
+```swift
+
+let collection = OpenBehavior<Array<Int>>([])
+
+collection.value.append(1)
+print(collection.value) // [1]
+
+var appendedNumber = 0
+collection.appended.sink { appendedNumber = $0 }
+
+collection.append(2)
+print(appendedNumber) // 2
+
+var removedNumber = 0
+collection.removed.sink { removedNumber = $0 }
+
+collection.remove(at: 0)
+print(removedNumber) // 1
+
+collection.remove(at: 0)
+print(removedNumber) // 2
+
+print(collection.value.count) // 0
+```
