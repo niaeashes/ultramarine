@@ -1,5 +1,6 @@
 //
-//  WatershedSignal.swift
+//  ResultSignal.swift
+//  Ultramarine
 //  
 //
 
@@ -36,6 +37,10 @@ public class ResultSignal<Success, Failure: Error>: Signal<Result<Success, Failu
                 cancellable.cancel()
             }
         })
+    }
+    
+    public override func fire(_ payload: Result<Success, Failure>) {
+        super.fire(payload)
     }
     
     public func success(_ value: Success) {

@@ -8,9 +8,7 @@ public class Signal<Payload> {
     private(set) var subscriptions: Array<Subscription<Payload>> = []
     private var inProcess = false
     
-    public init() {}
-    
-    public func fire(_ payload: Payload) {
+    func fire(_ payload: Payload) {
         if inProcess == true { return }
         defer { inProcess = false }
         inProcess = true
