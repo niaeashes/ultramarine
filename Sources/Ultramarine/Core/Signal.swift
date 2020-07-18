@@ -47,3 +47,19 @@ extension Signal {
         return subscribe(Subscription<Output>() { value, _ in completion(value) })
     }
 }
+
+// MARK: - Plug.
+
+public final class Plug<Payload>: Signal<Payload> {
+    
+    public override init() {}
+    
+    public override func fire(_ payload: Payload) {
+        super.fire(payload)
+    }
+}
+
+extension Signal {
+    
+    public static var plug: Plug<Payload> { Plug<Payload>() }
+}

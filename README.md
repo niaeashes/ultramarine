@@ -151,7 +151,7 @@ viewModel.$text <<= "updated"
 
 ```swift
 class ViewModel {
-    let tapSignal = OpenSignal<Void>()
+    let tapSignal = Signal<Void>.plug
     
     func tap() {
         tapSignal.fire(Void())
@@ -174,7 +174,7 @@ Simple implementing is by `sink`
 
 ```swift
 let number = 0.continuous
-let numberSignal = OpenSignal<Int>()
+let numberSignal = Signal<Int>.plug
 
 numberSignal.sink { [weak number] value in number? <<= value }
 ```
@@ -185,7 +185,7 @@ This is a Behavior that keeps track of the last value sent by the Signal.
 
 ```swift
 let numberMemory = MemoryBehavior<Int>()
-let ticketSignal = OpenSignal<Int>()
+let ticketSignal = Signal<Int>.plug
 
 print(numberMemory.value) // nil
 

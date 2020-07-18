@@ -35,7 +35,7 @@ class ViewModelTests: XCTestCase {
         
         @Pub var text = ""
         
-        let tapSignal = OpenSignal<Void>()
+        let tapSignal = Signal<Void>.plug
         
         func subscribe(_ button: Button) {
             $text.assign(to: \Button.text, on: button)
