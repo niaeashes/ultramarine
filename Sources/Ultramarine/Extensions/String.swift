@@ -13,7 +13,7 @@ extension Subject where Value: CustomStringConvertible {
         source.replaceToken
     }
     
-    public var string: Subject<String> {
+    public func string() -> Subject<String> {
         Subject.transform(source: self) { $0.description }
     }
 }
@@ -128,6 +128,6 @@ extension Subject where Value: CustomStringConvertible {
     
     public var replaceToken: String {
         ReplaceTokenStorage.spawn()
-        return ReplaceTokenStorage.current!.register(source: string)
+        return ReplaceTokenStorage.current!.register(source: string())
     }
 }
