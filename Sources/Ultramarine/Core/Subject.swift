@@ -83,21 +83,6 @@ extension Subject where Value: RangeReplaceableCollection {
     }
 }
 
-// MARK: - Assign to another object.
-
-extension Subject {
-    
-    public func assign<Root: AnyObject>(to keyPath: ReferenceWritableKeyPath<Root, Value>, on object: Root) -> Cancellable {
-        defer { object[keyPath: keyPath] = value}
-        return sign { [weak object] in object?[keyPath: keyPath] = $0 }
-    }
-    
-    public func assign<Root: AnyObject>(to keyPath: ReferenceWritableKeyPath<Root, Optional<Value>>, on object: Root) -> Cancellable {
-        defer { object[keyPath: keyPath] = value}
-        return sign { [weak object] in object?[keyPath: keyPath] = $0 }
-    }
-}
-
 // MARK: - Assign value operator.
 
 infix operator <<=: AssignmentPrecedence

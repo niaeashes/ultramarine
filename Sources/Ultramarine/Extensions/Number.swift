@@ -14,11 +14,11 @@ extension Subject where Value: AdditiveArithmetic {
     }
     
     public static func + (source: Subject<Value>, value: Value) -> Subject<Value> {
-        return Subject.transform(source: source) { $0 + value }
+        return source.transform { $0 + value }
     }
     
     public static func - (source: Subject<Value>, value: Value) -> Subject<Value> {
-        return Subject.transform(source: source) { $0 - value }
+        return source.transform { $0 - value }
     }
     
     public static func + (lhs: Subject<Value>, rhs: Subject<Value>) -> Subject<Value> {

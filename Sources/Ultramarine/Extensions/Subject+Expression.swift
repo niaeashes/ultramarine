@@ -5,10 +5,12 @@
 
 // MARK: - Transform Definition.
 
+infix operator +>: MultiplicationPrecedence
+
 extension Subject {
     
     public static func transform<V, R>(source: Subject<V>, _ transform: @escaping (V) -> R) -> Subject<R> {
-        return source.transform(transform)
+        source.transform(transform)
     }
     
     public func transform<R>(_ transform: @escaping (Value) -> R) -> Subject<R> {
@@ -26,6 +28,8 @@ extension Subject {
 }
 
 // MARK: - Combine Definition.
+
+infix operator <+>: MultiplicationPrecedence
 
 extension Subject {
     

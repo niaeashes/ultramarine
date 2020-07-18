@@ -88,6 +88,25 @@ extension Transmit {
     }
 }
 
+// MARK: - Assign to another object.
+
+extension Transmit {
+    
+    public func assign<Root: AnyObject>(to keyPath: ReferenceWritableKeyPath<Root, Value>, on object: Root) -> Cancellable {
+        if let subject = self as? Subject<Value> {
+            object[keyPath: keyPath] = subject.value
+        }
+        return sign { [weak object] in object?[keyPath: keyPath] = $0 }
+    }
+    
+    public func assign<Root: AnyObject>(to keyPath: ReferenceWritableKeyPath<Root, Optional<Value>>, on object: Root) -> Cancellable {
+        if let subject = self as? Subject<Value> {
+            object[keyPath: keyPath] = subject.value
+        }
+        return sign { [weak object] in object?[keyPath: keyPath] = $0 }
+    }
+}
+
 // MARK: - Cancellable.
 
 extension Transmit: CancellableOwner {
