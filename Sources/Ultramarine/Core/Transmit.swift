@@ -87,3 +87,12 @@ extension Transmit {
         }
     }
 }
+
+// MARK: - for Debug.
+
+extension Transmit: CustomDebugStringConvertible {
+    
+    public var debugDescription: String {
+        "Transmit<\(Value.self)>, \(upstreams.count) upstreams."
+    }
+}
