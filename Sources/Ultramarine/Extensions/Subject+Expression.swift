@@ -8,13 +8,17 @@
 extension Subject {
     
     public static func transform<V, R>(source: Subject<V>, _ transform: @escaping (V) -> R) -> Subject<R> {
+        return source.transform(transform)
+    }
+    
+    public func transform<R>(_ transform: @escaping (Value) -> R) -> Subject<R> {
         
-        let currentValue = transform(source.value)
+        let currentValue = transform(value)
         let transformSubject = Subject<R>(currentValue)
         
-        source.sign { [transformSubject, weak source] _ in
-            guard let source = source else { return }
-            transformSubject.value = transform(source.value)
+        sign { [transformSubject, weak self] _ in
+            guard let self = self else { return }
+            transformSubject.value = transform(self.value)
         }
         
         return transformSubject
