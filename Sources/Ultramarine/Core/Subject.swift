@@ -79,6 +79,15 @@ extension Subject where Value: RangeReplaceableCollection {
     }
 }
 
+// MARK: - Assign to another object.
+
+extension Subject {
+    
+    public func assign<Root: AnyObject>(to keyPath: ReferenceWritableKeyPath<Root, Value>, on object: Root) {
+        sign { [weak object] in object?[keyPath: keyPath] = $0 }
+    }
+}
+
 // MARK: - Writable.
 
 public final class WritableSubject<Value>: Subject<Value> {

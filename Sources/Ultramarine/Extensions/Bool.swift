@@ -3,10 +3,6 @@
 //  Ultramarine
 //
 
-private let SOURCE_KEY = "source"
-private let LHS_KEY = "left-hand source"
-private let RHS_KEY = "right-hand source"
-
 extension Subject where Value == Bool {
     
     public func toggle() {
