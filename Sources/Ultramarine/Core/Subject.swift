@@ -11,14 +11,18 @@ protocol Publisher {
     func publish()
 }
 
-public final class Subject<Value: Equatable>: Transmit<Value>, Publisher {
+public final class Subject<Value>: Transmit<Value>, Publisher {
     
     public init(_ initialValue: Value) {
         self.value = initialValue
     }
     
     public var value: Value {
-        didSet { relay(value) }
+        didSet {
+            // [!] If Value is not Equatable, isEquals always return false.
+            if isEquals(value, oldValue) { return }
+            relay(value)
+        }
     }
     
     public func async(update value: Value, in dispatch: DispatchQueue? = nil) {
