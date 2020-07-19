@@ -27,7 +27,7 @@ public class Transmit<Value> {
         sources = []
     }
     
-    public func clean() {
+    func clean() {
         upstreams = upstreams.filter { !($0.obj?.isCanceled ?? true) }
     }
     
@@ -132,6 +132,31 @@ extension Transmit {
         return sign { [weak object] in
             guard let object = object else { return $1.cancel() }
             object[keyPath: keyPath] = $0
+        }
+    }
+}
+
+// MARK: - CustomStringConvertible.
+
+extension Transmit where Value: CustomStringConvertible {
+    
+    public func assign<Root: AnyObject>(describeTo keyPath: ReferenceWritableKeyPath<Root, String>, on object: Root) -> Cancellable {
+        if let subject = self as? Subject<Value> {
+            object[keyPath: keyPath] = subject.value.description
+        }
+        return sign { [weak object] in
+            guard let object = object else { return $1.cancel() }
+            object[keyPath: keyPath] = $0.description
+        }
+    }
+    
+    public func assign<Root: AnyObject>(describeTo keyPath: ReferenceWritableKeyPath<Root, Optional<String>>, on object: Root) -> Cancellable {
+        if let subject = self as? Subject<Value> {
+            object[keyPath: keyPath] = subject.value.description
+        }
+        return sign { [weak object] in
+            guard let object = object else { return $1.cancel() }
+            object[keyPath: keyPath] = $0.description
         }
     }
 }

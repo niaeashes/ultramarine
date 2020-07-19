@@ -15,6 +15,10 @@ public class Subject<Value>: Transmit<Value> {
         didSet { relay(value) }
     }
     
+    public func publish() {
+        relay(value)
+    }
+    
     override func relay(_ value: Value) {
         if signal.has(name: MODIFY_SIGNAL_KEY) {
             modifySignal?.fire(value)
