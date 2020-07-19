@@ -3,6 +3,6 @@
 //  Ultramarine
 //
 
-extension Array {
+extension Array where Element: Equatable {
     public func subject() -> Subject<Self> { Subject<Self>(self) }
 }

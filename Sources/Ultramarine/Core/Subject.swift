@@ -1,11 +1,17 @@
 //
 //  Subject.swift
 //  Ultramarine
-//  
+//
+
+import Foundation
 
 private let MODIFY_SIGNAL_KEY = "modify"
 
-public class Subject<Value>: Transmit<Value> {
+protocol Publisher {
+    func publish()
+}
+
+public final class Subject<Value: Equatable>: Transmit<Value>, Publisher {
     
     public init(_ initialValue: Value) {
         self.value = initialValue
@@ -13,6 +19,12 @@ public class Subject<Value>: Transmit<Value> {
     
     public var value: Value {
         didSet { relay(value) }
+    }
+    
+    public func async(update value: Value, in dispatch: DispatchQueue? = nil) {
+        (dispatch ?? DispatchQueue.global(qos: .background)).async { [weak self] in
+            self?.value = value
+        }
     }
     
     public func publish() {
@@ -61,18 +73,21 @@ extension Subject where Value: RangeReplaceableCollection {
     public var removed: Signal<Value.Element>! { signal.get(name: REMOVED_SIGNAL_KEY) }
     
     public func append(_ newElement: Value.Element) {
-        defer {
-            appended?.fire(newElement)
-            relay(value)
-        }
         value.append(newElement)
+
+        if signal.has(name: APPENDED_SIGNAL_KEY) {
+            appended?.fire(newElement)
+        }
+        relay(value)
     }
     
     @discardableResult
     public func remove(at i: Value.Index) -> Value.Element {
         let element = value.remove(at: i)
         
-        removed?.fire(element)
+        if signal.has(name: REMOVED_SIGNAL_KEY) {
+            removed?.fire(element)
+        }
         relay(value)
         
         return element
@@ -83,7 +98,7 @@ extension Subject where Value: RangeReplaceableCollection {
     }
     
     public func count() -> Subject<Int> {
-        Subject.transform(source: self) { $0.count }
+        transform { $0.count }
     }
 }
 

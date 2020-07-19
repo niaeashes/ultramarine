@@ -7,6 +7,7 @@ class Upstream<Input>: Cancellable {
     
     private var handler: ((Input, Cancellable) -> Void)?
     private var owner: CancellableOwner?
+    weak var debugObject: DebugObject? = nil
     
     init(owner: CancellableOwner, _ handler: @escaping (Input, Cancellable) -> Void) {
         self.handler = handler
@@ -37,4 +38,11 @@ class Weak<T: AnyObject> {
 extension Upstream {
     
     var weak: Weak<Upstream<Input>> { Weak(self) }
+}
+
+extension Upstream: CustomDebugStringConvertible {
+    
+    var debugDescription: String {
+        return "Upstream<\(Input.self)>: \(debugObject?.debugDescription ?? "(no debug object)")"
+    }
 }

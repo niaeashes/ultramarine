@@ -6,11 +6,11 @@
 extension Subject where Value: AdditiveArithmetic {
     
     public static func += (source: Subject<Value>, value: Value) {
-        source.value = source.value + value
+        source <<= source.value + value
     }
     
     public static func -= (source: Subject<Value>, value: Value) {
-        source.value = source.value - value
+        source <<= source.value - value
     }
     
     public static func + (source: Subject<Value>, value: Value) -> Subject<Value> {
@@ -33,11 +33,11 @@ extension Subject where Value: AdditiveArithmetic {
 extension Subject where Value: Numeric {
     
     public static func *= (source: Subject<Value>, value: Value) {
-        source.value = source.value * value
+        source <<= source.value * value
     }
     
     public static func * (source: Subject<Value>, value: Value) -> Subject<Value> {
-        return Subject.transform(source: source) { $0 * value }
+        return source.transform { $0 * value }
     }
     
     public static func * (lhs: Subject<Value>, rhs: Subject<Value>) -> Subject<Value> {
@@ -48,7 +48,7 @@ extension Subject where Value: Numeric {
 extension Subject where Value: FloatingPoint {
     
     public static func /= (source: Subject<Value>, value: Value) {
-        source.value = source.value / value
+        source <<= source.value / value
     }
     
     public static func / (source: Subject<Value>, value: Value) -> Subject<Value> {

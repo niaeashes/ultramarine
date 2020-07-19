@@ -27,9 +27,9 @@ private extension Int {
 
 // MARK: - Formatted String.
 
-class FormattedStringSubject: Subject<String> {
+final class FormattedStringTransmit: Transmit<Void> {
     
-    private(set) var source: Array<Element> = []
+    private(set) var tokens: Array<Element> = []
     
     enum Element: CustomStringConvertible {
         case string(String)
@@ -45,50 +45,56 @@ class FormattedStringSubject: Subject<String> {
         }
     }
     
-    public init(format: String) {
-        super.init("")
+    func prepare(format: String) -> Subject<String> {
         
-        prepare(format: format)
-        update()
-    }
-    
-    private func prepare(format: String) {
-        defer { ReplaceTokenStorage.current?.clear() }
+        defer {
+            ReplaceTokenStorage.current?.clear()
+            relay(())
+        }
+        
         let collection = ReplaceTokenStorage.current?.collection ?? [:]
+        let destination = "".subject()
         
-        var newSource: Array<Element> = [.string(format)]
+        var newTokens: Array<Element> = [.string(format)]
         
         collection.forEach { key, target in
             
-            let oldSource = newSource.map { $0 }
-            newSource = []
-            oldSource.forEach { element in
+            let oldTokens = newTokens.map { $0 }
+            let replaceToken = key.replaceToken
+            newTokens = []
+            oldTokens.forEach { element in
                 switch element {
                 case .string(let format):
-                    var parts = format.components(separatedBy: key.replaceToken)
-                    while parts.count > 0 {
-                        newSource.append(.string(parts.removeFirst()))
-                        if parts.count > 0 {
-                            newSource.append(.token(target))
-                        }
+                    var parts = format.components(separatedBy: replaceToken)
+                    while !parts.isEmpty {
+                        newTokens.append(.string(parts.removeFirst()))
+                        if !parts.isEmpty { newTokens.append(.token(target)) }
                     }
                 default:
-                    newSource.append(element)
+                    newTokens.append(element)
                 }
             }
+            
+            let sub = target.sign { [weak self] _, cancellable in
+                guard let self = self else { return cancellable.cancel() }
+                self.relay(())
+            }
+            
+            self.bind(source: sub)
+            sub.debugObject = self
         }
         
-        self.source = newSource
+        self.tokens = newTokens
         
-        sources.forEach { $0.cancel() }
-        sources = collection.values.map { $0.sign { [weak self] _, cancellable in
-            guard let self = self else { return cancellable.cancel() }
-            self.update()
-        } }
-    }
-    
-    private func update() {
-        value = source.map { $0.description }.joined()
+        let sub = sign { [weak self, weak destination] _, cancellable in
+            guard let destination = destination, let tokens = self?.tokens else { return cancellable.cancel() }
+            destination <<= tokens.map { $0.description }.joined()
+        }
+        
+        destination.bind(source: sub)
+        sub.debugObject = destination
+        
+        return destination
     }
 }
 
@@ -120,7 +126,7 @@ extension String {
     
     public func format() -> Subject<String> {
         defer { ReplaceTokenStorage.current?.clear() }
-        return FormattedStringSubject(format: self)
+        return FormattedStringTransmit().prepare(format: self)
     }
 }
 

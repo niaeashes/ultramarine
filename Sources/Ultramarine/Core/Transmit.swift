@@ -3,6 +3,8 @@
 //  Ultramarine
 //
 
+import Foundation
+
 public class Transmit<Value> {
     
     var sources: Array<Cancellable> = []
@@ -16,6 +18,8 @@ public class Transmit<Value> {
         let upstreams = self.upstreams.compactMap { $0.obj }
         upstreams.forEach { $0.send(value) }
     }
+    
+    // for Object References.
     
     func bind(source: Cancellable) {
         sources.append(source)
@@ -74,6 +78,7 @@ extension Transmit {
             if isIncluded($0) { publisher.relay($0) }
         }
         publisher.bind(source: sub)
+        sub.debugObject = publisher
         return publisher
     }
     
@@ -84,6 +89,7 @@ extension Transmit {
             publisher.relay(transform($0))
         }
         publisher.bind(source: sub)
+        sub.debugObject = publisher
         return publisher
     }
     
@@ -111,56 +117,6 @@ extension Transmit {
     }
 }
 
-// MARK: - Assign to another object.
-
-extension Transmit {
-    
-    public func assign<Root: AnyObject>(to keyPath: ReferenceWritableKeyPath<Root, Value>, on object: Root) -> Cancellable {
-        if let subject = self as? Subject<Value> {
-            object[keyPath: keyPath] = subject.value
-        }
-        return sign { [weak object] in
-            guard let object = object else { return $1.cancel() }
-            object[keyPath: keyPath] = $0
-        }
-    }
-    
-    public func assign<Root: AnyObject>(to keyPath: ReferenceWritableKeyPath<Root, Optional<Value>>, on object: Root) -> Cancellable {
-        if let subject = self as? Subject<Value> {
-            object[keyPath: keyPath] = subject.value
-        }
-        return sign { [weak object] in
-            guard let object = object else { return $1.cancel() }
-            object[keyPath: keyPath] = $0
-        }
-    }
-}
-
-// MARK: - CustomStringConvertible.
-
-extension Transmit where Value: CustomStringConvertible {
-    
-    public func assign<Root: AnyObject>(describeTo keyPath: ReferenceWritableKeyPath<Root, String>, on object: Root) -> Cancellable {
-        if let subject = self as? Subject<Value> {
-            object[keyPath: keyPath] = subject.value.description
-        }
-        return sign { [weak object] in
-            guard let object = object else { return $1.cancel() }
-            object[keyPath: keyPath] = $0.description
-        }
-    }
-    
-    public func assign<Root: AnyObject>(describeTo keyPath: ReferenceWritableKeyPath<Root, Optional<String>>, on object: Root) -> Cancellable {
-        if let subject = self as? Subject<Value> {
-            object[keyPath: keyPath] = subject.value.description
-        }
-        return sign { [weak object] in
-            guard let object = object else { return $1.cancel() }
-            object[keyPath: keyPath] = $0.description
-        }
-    }
-}
-
 // MARK: - Cancellable.
 
 extension Transmit: CancellableOwner {
@@ -178,6 +134,14 @@ extension Transmit: CancellableOwner {
 extension Transmit: CustomDebugStringConvertible {
     
     public var debugDescription: String {
-        "Transmit<\(Value.self)>, \(upstreams.count) upstreams."
+        (["\(Self.self), \(upstreams.filter({ $0.obj != nil }).count) upstreams, \(sources.count) sources."] + debugUpstreams.map { "  +- \($0)" }).joined(separator: "\n")
+    }
+    
+    var debugUpstreams: Array<String> {
+        upstreams.map { "\($0.obj?.debugDescription ?? "null")\($0.obj?.isCanceled != false ? " (cancelled)" : "")" }
     }
 }
+
+protocol DebugObject: AnyObject, CustomDebugStringConvertible {}
+
+extension Transmit: DebugObject {}
