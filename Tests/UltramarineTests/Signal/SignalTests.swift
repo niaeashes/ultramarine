@@ -8,19 +8,24 @@ import Ultramarine
 
 class SignalTests: XCTestCase {
     
+    var cancellables = CancellableBag()
+    
     override func setUpWithError() throws {
         // Put setup code here. This method is called before the invocation of each test method in the class.
     }
 
     override func tearDownWithError() throws {
-        // Put teardown code here. This method is called after the invocation of each test method in the class.
+        cancellables.cancel()
     }
     
     func testBasic() throws {
         let signal = Signal<Void>()
         var counter = 0
         
-        signal.sink { counter += 1 }
+        signal
+            .sink { counter += 1 }
+            .append(to: cancellables)
+        
         signal.fire(())
         signal.fire(())
         signal.fire(())
@@ -80,7 +85,9 @@ class SignalTests: XCTestCase {
         do {
             let receiver = Receiver()
             
-            signal.action(Receiver.update, on: receiver)
+            signal
+                .action(Receiver.update, on: receiver)
+                .append(to: cancellables)
             checker = receiver
             
             XCTAssertNotEqual(receiver.last, 321321)
@@ -100,13 +107,17 @@ class SignalTests: XCTestCase {
             do {
                 let signal = Int.signal()
                 let filter = signal.filter { $0 % 2 == 0 }
-                _ = filter.sink { _ in counter += 1 }
+                filter
+                    .sink { _ in counter += 1 }
+                    .append(to: cancellables)
                 checker = filter
                 
                 signal.fire(2)
                 XCTAssertEqual(counter, 1)
                 
                 XCTAssertNotNil(checker)
+                
+                cancellables.cancel()
             }
             
             XCTAssertNil(checker)
@@ -119,13 +130,17 @@ class SignalTests: XCTestCase {
             do {
                 let signal = Int.signal()
                 let map = signal.map { "\($0)" }
-                _ = map.sink { counter += $0 }
+                map
+                    .sink { counter += $0 }
+                    .append(to: cancellables)
                 checker = map
                 
                 signal.fire(2)
                 XCTAssertEqual(counter, "2")
                 
                 XCTAssertNotNil(checker)
+                
+                cancellables.cancel()
             }
             
             XCTAssertNil(checker)

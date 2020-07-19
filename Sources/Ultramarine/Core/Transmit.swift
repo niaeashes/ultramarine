@@ -5,24 +5,31 @@
 
 public class Transmit<Value> {
     
-    private(set) var upstreams: Array<Upstream<Value>> = []
+    var sources: Array<Cancellable> = []
+    private(set) var upstreams: Array<Weak<Upstream<Value>>> = []
     private var inProcess = false
     
     func relay(_ value: Value) {
         guard lock() else { return }
         defer { unlock() }
         
-        let upstreams = self.upstreams
+        let upstreams = self.upstreams.compactMap { $0.body }
         upstreams.forEach { $0.send(value) }
     }
     
+    func bind(source: Cancellable) {
+        sources.append(source)
+    }
+    
     public func releaseAll() {
-        upstreams.forEach { $0.cancel() }
+        upstreams.forEach { $0.body?.cancel() }
         upstreams = []
+        sources.forEach { $0.cancel() }
+        sources = []
     }
     
     public func clean() {
-        upstreams = upstreams.map { !$0.isCanceled }
+        upstreams = upstreams.filter { !($0.body?.isCanceled ?? true) }
     }
 }
 
@@ -31,9 +38,10 @@ public class Transmit<Value> {
 extension Transmit {
     
     @discardableResult
-    func sign(_ upstream: @escaping (Value) -> Void) -> Upstream<Value> {
-        let upstream = Upstream<Value>(upstream, owner: self)
-        upstreams.append(upstream)
+    func sign(_ upstream: @escaping (Value, Cancellable) -> Void) -> Upstream<Value> {
+        defer { clean() }
+        let upstream = Upstream<Value>(owner: self, upstream)
+        upstreams.append(upstream.weak)
         return upstream
     }
 }
@@ -58,19 +66,27 @@ extension Transmit {
     
     public func filter(_ isIncluded: @escaping (Value) -> Bool) -> Transmit<Value> {
         let publisher = Transmit<Value>()
-        sign { if isIncluded($0) { publisher.relay($0) } }
+        let sub = sign { [weak publisher] in
+            guard let publisher = publisher else { return $1.cancel() }
+            if isIncluded($0) { publisher.relay($0) }
+        }
+        publisher.bind(source: sub)
         return publisher
     }
     
     public func map<Output>(_ transform: @escaping (Value) -> Output) -> Transmit<Output> {
         let publisher = Transmit<Output>()
-        sign { publisher.relay(transform($0)) }
+        let sub = sign { [weak publisher] in
+            guard let publisher = publisher else { return $1.cancel() }
+            publisher.relay(transform($0))
+        }
+        publisher.bind(source: sub)
         return publisher
     }
     
     @discardableResult
     public func sink(_ completion: @escaping (Value) -> Void) -> Cancellable {
-        sign(completion)
+        return sign { value, _ in completion(value) }
     }
     
     ///
@@ -85,8 +101,8 @@ extension Transmit {
     @discardableResult
     public func action<Root: AnyObject>(_ action: @escaping (Root) -> (Value) -> Void, on object: Root) -> Cancellable {
         
-        sign { [weak object] in
-            guard let object = object else { return }
+        return sign { [weak object] in
+            guard let object = object else { return $1.cancel() }
             action(object)($0)
         }
     }
@@ -100,14 +116,20 @@ extension Transmit {
         if let subject = self as? Subject<Value> {
             object[keyPath: keyPath] = subject.value
         }
-        return sign { [weak object] in object?[keyPath: keyPath] = $0 }
+        return sign { [weak object] in
+            guard let object = object else { return $1.cancel() }
+            object[keyPath: keyPath] = $0
+        }
     }
     
     public func assign<Root: AnyObject>(to keyPath: ReferenceWritableKeyPath<Root, Optional<Value>>, on object: Root) -> Cancellable {
         if let subject = self as? Subject<Value> {
             object[keyPath: keyPath] = subject.value
         }
-        return sign { [weak object] in object?[keyPath: keyPath] = $0 }
+        return sign { [weak object] in
+            guard let object = object else { return $1.cancel() }
+            object[keyPath: keyPath] = $0
+        }
     }
 }
 

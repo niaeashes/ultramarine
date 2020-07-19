@@ -8,12 +8,14 @@ import Ultramarine
 
 class CollectionBehaviorTests: XCTestCase {
 
+    var cancellables = CancellableBag()
+    
     override func setUpWithError() throws {
         // Put setup code here. This method is called before the invocation of each test method in the class.
     }
 
     override func tearDownWithError() throws {
-        // Put teardown code here. This method is called after the invocation of each test method in the class.
+        cancellables.cancel()
     }
     
     func testSubscript() throws {
@@ -32,7 +34,9 @@ class CollectionBehaviorTests: XCTestCase {
         let collection = [Int]().subject()
         var appendedNumber = 0
         
-        collection.appended.sink { appendedNumber = $0 }
+        collection.appended
+            .sink { appendedNumber = $0 }
+            .append(to: cancellables)
         
         collection.append(1)
         XCTAssertEqual(appendedNumber, 1)
@@ -47,7 +51,9 @@ class CollectionBehaviorTests: XCTestCase {
         let collection = [1, 2, 3].subject()
         var removedNumber = 0
         
-        collection.removed.sink { removedNumber = $0 }
+        collection.removed
+            .sink { removedNumber = $0 }
+            .append(to: cancellables)
         
         collection.remove(at: 0)
         XCTAssertEqual(removedNumber, 1)

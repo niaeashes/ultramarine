@@ -80,7 +80,11 @@ class FormattedStringSubject: Subject<String> {
         
         self.source = newSource
         
-        collection.values.forEach { $0.sign { [weak self] _ in self?.update() } }
+        sources.forEach { $0.cancel() }
+        sources = collection.values.map { $0.sign { [weak self] _, cancellable in
+            guard let self = self else { return cancellable.cancel() }
+            self.update()
+        } }
     }
     
     private func update() {

@@ -18,10 +18,12 @@ extension Subject {
         let currentValue = transform(value)
         let transformSubject = Subject<R>(currentValue)
         
-        sign { [transformSubject, weak self] _ in
-            guard let self = self else { return }
-            transformSubject.value = transform(self.value)
+        let sub = sign { [weak transformSubject] in
+            guard let transformSubject = transformSubject else { return $1.cancel() }
+            transformSubject.value = transform($0)
         }
+        
+        transformSubject.bind(source: sub)
         
         return transformSubject
     }
@@ -38,15 +40,18 @@ extension Subject {
         let currentValue = combine(a.value, b.value)
         let combineSubject = Subject<R>(currentValue)
         
-        a.sign { [combineSubject, weak a, weak b] _ in
-            guard let a = a, let b = b else { return }
+        let subA = a.sign { [weak combineSubject, a, b] _, cancellable in
+            guard let combineSubject = combineSubject else { return cancellable.cancel() }
             combineSubject.value = combine(a.value, b.value)
         }
         
-        b.sign { [combineSubject, weak a, weak b] _ in
-            guard let a = a, let b = b else { return }
+        let subB = b.sign { [weak combineSubject, a, b] _, cancellable in
+            guard let combineSubject = combineSubject else { return cancellable.cancel() }
             combineSubject.value = combine(a.value, b.value)
         }
+        
+        combineSubject.bind(source: subA)
+        combineSubject.bind(source: subB)
         
         return combineSubject
     }
