@@ -22,7 +22,7 @@ Ultramarine is based on FRP, so I've written a little bit about FRP, but you don
 A Subject is an object that holds a value and can be notified of value changes and can be connected to other Subjects.
 
 ```swift
-let name = "Alice".subject // Make string writable subject.
+let name = "Alice".subject() // Make string subject.
 print(name.value) // "Alice"
 
 name <<= "Bob"
@@ -51,12 +51,17 @@ Signals have no function by themselves. Add a process that is chained from the s
 let signal = Signal<Void>()
 var counter = 0
 
-signal.sink { counter += 1 }
+let sub = signal.sink { counter += 1 }
 
 signal.fire(())
 signal.fire(())
+print(counter) // 2
+
+sub.cancel()
+
 signal.fire(())
-print(counter) // 3
+signal.fire(())
+print(counter) // 2
 ```
 
 # Usage
