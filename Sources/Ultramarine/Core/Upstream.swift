@@ -27,10 +27,10 @@ class Upstream<Input>: Cancellable {
 
 class Weak<T: AnyObject> {
     
-    weak var body: T?
+    weak var obj: T?
     
-    init(_ body: T) {
-        self.body = body
+    init(_ obj: T) {
+        self.obj = obj
     }
 }
 

@@ -24,7 +24,7 @@ class SignalTests: XCTestCase {
         
         signal
             .sink { counter += 1 }
-            .append(to: cancellables)
+            .store(to: cancellables)
         
         signal.fire(())
         signal.fire(())
@@ -87,7 +87,7 @@ class SignalTests: XCTestCase {
             
             signal
                 .action(Receiver.update, on: receiver)
-                .append(to: cancellables)
+                .store(to: cancellables)
             checker = receiver
             
             XCTAssertNotEqual(receiver.last, 321321)
@@ -109,7 +109,7 @@ class SignalTests: XCTestCase {
                 let filter = signal.filter { $0 % 2 == 0 }
                 filter
                     .sink { _ in counter += 1 }
-                    .append(to: cancellables)
+                    .store(to: cancellables)
                 checker = filter
                 
                 signal.fire(2)
@@ -132,7 +132,7 @@ class SignalTests: XCTestCase {
                 let map = signal.map { "\($0)" }
                 map
                     .sink { counter += $0 }
-                    .append(to: cancellables)
+                    .store(to: cancellables)
                 checker = map
                 
                 signal.fire(2)

@@ -13,7 +13,7 @@ public class Transmit<Value> {
         guard lock() else { return }
         defer { unlock() }
         
-        let upstreams = self.upstreams.compactMap { $0.body }
+        let upstreams = self.upstreams.compactMap { $0.obj }
         upstreams.forEach { $0.send(value) }
     }
     
@@ -22,14 +22,17 @@ public class Transmit<Value> {
     }
     
     public func releaseAll() {
-        upstreams.forEach { $0.body?.cancel() }
+        upstreams.forEach { $0.obj?.cancel() }
         upstreams = []
-        sources.forEach { $0.cancel() }
         sources = []
     }
     
     public func clean() {
-        upstreams = upstreams.filter { !($0.body?.isCanceled ?? true) }
+        upstreams = upstreams.filter { !($0.obj?.isCanceled ?? true) }
+    }
+    
+    deinit {
+        upstreams.forEach { $0.obj?.cancel() }
     }
 }
 

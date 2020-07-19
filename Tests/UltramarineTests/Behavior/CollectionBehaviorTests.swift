@@ -36,7 +36,7 @@ class CollectionBehaviorTests: XCTestCase {
         
         collection.appended
             .sink { appendedNumber = $0 }
-            .append(to: cancellables)
+            .store(to: cancellables)
         
         collection.append(1)
         XCTAssertEqual(appendedNumber, 1)
@@ -53,7 +53,7 @@ class CollectionBehaviorTests: XCTestCase {
         
         collection.removed
             .sink { removedNumber = $0 }
-            .append(to: cancellables)
+            .store(to: cancellables)
         
         collection.remove(at: 0)
         XCTAssertEqual(removedNumber, 1)

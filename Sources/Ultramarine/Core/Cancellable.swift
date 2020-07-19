@@ -10,23 +10,23 @@ public protocol Cancellable: AnyObject {
     func cancel()
 }
 
+extension Cancellable {
+    
+    public func store(to collection: inout Array<Cancellable>) {
+        collection.append(self)
+    }
+    
+    public func store(to bag: CancellableBag) {
+        bag.cancellables.append(self)
+    }
+}
+
 protocol CancellableOwner: AnyObject {
     
     func cancel(target: Cancellable)
 }
 
-extension Cancellable {
-    
-    public func append(to collection: inout Array<Cancellable>) {
-        collection.append(self)
-    }
-    
-    public func append(to bag: CancellableBag) {
-        bag.cancellables.append(self)
-    }
-}
-
-public final class CancellableBag: Cancellable {
+public final class CancellableBag {
     
     var cancellables: Array<Cancellable> = []
     
@@ -37,5 +37,7 @@ public final class CancellableBag: Cancellable {
         cancellables = []
     }
     
-    public var isCanceled: Bool { cancellables.count == 0 }
+    deinit {
+        cancel()
+    }
 }
