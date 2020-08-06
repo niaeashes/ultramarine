@@ -16,7 +16,7 @@ class NumberExpressionTests: XCTestCase {
         // Put teardown code here. This method is called after the invocation of each test method in the class.
     }
     
-    func testAddOperator() throws {
+    func testAdditionOperator() throws {
         let a = 1.subject()
         
         let b = a + 10
@@ -41,7 +41,7 @@ class NumberExpressionTests: XCTestCase {
         }
     }
     
-    func testMinusOperator() throws {
+    func testSubtractionOperator() throws {
         let a = 1.subject()
         
         let b = a - 10
@@ -65,4 +65,30 @@ class NumberExpressionTests: XCTestCase {
             XCTAssertEqual(b.value, -5)
         }
     }
+    
+    func testMultiplicationOperator() throws {
+        let a = 1.subject()
+        
+        let b = a * 2
+        
+        do {
+            XCTAssertEqual(a.value, 1)
+            XCTAssertEqual(b.value, 2)
+        }
+        
+        a += 10
+        
+        do {
+            XCTAssertEqual(a.value, 11)
+            XCTAssertEqual(b.value, 22)
+        }
+        
+        a -= 6
+        
+        do {
+            XCTAssertEqual(a.value, 5)
+            XCTAssertEqual(b.value, 10)
+        }
+    }
+    
 }

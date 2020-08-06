@@ -48,4 +48,9 @@ class StringSubjectTests: XCTestCase {
         number <<= 717171
         XCTAssertEqual(obj.text, "717171")
     }
+    
+    func testStringConvertible() {
+        let answer = 42.subject()
+        XCTAssertEqual("Answer to ultimate question: \(answer.description)", "Answer to ultimate question: 42")
+    }
 }

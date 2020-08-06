@@ -65,3 +65,63 @@ print(counter) // 2
 ```
 
 # Usage
+
+## Expressions
+
+### Arithmetic operators.
+
+Supports: `+`, `-`, `*`, `/`
+
+```swift
+let a = 1.subject()
+let b = 10.subject()
+
+let c = a + b // c is also Subject<Int>, and always result of `a + b`.
+
+print(c.value) // 1 + 10 = 11
+
+a <<= 10
+print(c.value) // 10 + 10 = 20
+```
+
+Supports to combine Subject<Int> and Int.
+
+```swift
+let a = 1.subject()
+let b = a * 2 // b is always result of `a * 2`.
+
+print(b.value) // 1 * 2 = 2
+
+a <<= 6
+print(b.value) // 6 * 2 = 12
+```
+
+### Logical Operators
+
+Supports: `&&`, `||`, `!`
+
+```swift
+let c1 = false.subject()
+let c2 = false.subject()
+
+let r1 = c1 && c2
+let r2 = c1 || c2
+let r3 = !c1
+
+print(r1.value, r2.value, r3.value) // false, false, true
+
+c1 <<= true
+print(r1.value, r2.value, r3.value) // false, true, false
+
+c2 <<= true
+print(r1.value, r2.value, r3.value) // true, true, false
+```
+
+## CustomStringConvertible
+
+If Value is CustomStringconvertible, Subject<Value> has description property.
+
+```swift
+let a = 42.subject()
+print("answer to ultimate question: \(a.description)") // print '42'
+```
