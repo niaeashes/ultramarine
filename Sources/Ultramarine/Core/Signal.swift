@@ -23,6 +23,8 @@ extension Signal where Value == Void {
 
 public final class ResultSignal<Success, Failure: Error>: Transmit<Result<Success, Failure>> {
     
+    public override init() {}
+    
     let success = Signal<Success>()
     let failure = Signal<Failure>()
     
