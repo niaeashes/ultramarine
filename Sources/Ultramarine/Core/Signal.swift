@@ -28,11 +28,11 @@ public final class ResultSignal<Success, Failure: Error>: Transmit<Result<Succes
     let success = Signal<Success>()
     let failure = Signal<Failure>()
     
-    public func fire(_ value: Success) {
+    public func fire(value: Success) {
         relay(.success(value))
     }
     
-    public func fire(_ value: Failure) {
+    public func fire(error value: Failure) {
         relay(.failure(value))
     }
 }
