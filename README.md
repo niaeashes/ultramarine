@@ -1,5 +1,7 @@
 # Ultramarine
 
+![Unit Tests](https://github.com/niaeashes/ultramarine/workflows/Unit%20Tests/badge.svg)
+
 Ultramarine is like a Functional Reactive Programming framework.
 
 Our goal is to:
