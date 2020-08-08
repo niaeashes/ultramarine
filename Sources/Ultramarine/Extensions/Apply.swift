@@ -16,7 +16,7 @@ extension Subject {
 
 extension Signal {
     
-    public func apply(closure: (Self) -> Void) -> Self {
+    public func apply(closure: (Signal<Value>) -> Void) -> Signal<Value> {
         closure(self)
         return self
     }
