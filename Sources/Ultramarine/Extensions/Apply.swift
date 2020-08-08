@@ -4,7 +4,7 @@
 
 extension Subject {
     
-    public func apply(closure: (Self) -> Void) -> Self {
+    public func apply(closure: (Subject<Value>) -> Void) -> Subject<Value> {
         closure(self)
         return self
     }
