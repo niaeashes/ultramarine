@@ -25,9 +25,6 @@ public final class ResultSignal<Success, Failure: Error>: Transmit<Result<Succes
     
     public override init() {}
     
-    let success = Signal<Success>()
-    let failure = Signal<Failure>()
-    
     public func fire(value: Success) {
         relay(.success(value))
     }

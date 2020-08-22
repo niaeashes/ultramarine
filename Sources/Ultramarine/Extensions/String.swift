@@ -5,19 +5,6 @@
 
 import Foundation
 
-prefix operator %
-
-extension Subject where Value: CustomStringConvertible {
-    
-    public static prefix func % (source: Subject<Value>) -> String {
-        source.replaceToken
-    }
-    
-    public func string() -> Subject<String> {
-        Subject.transform(source: self) { $0.description }
-    }
-}
-
 private let TOKEN_PREFIX = "\u{1A}<"
 private let TOKEN_POSTFIX = "\u{1A}>"
 
@@ -132,7 +119,17 @@ extension String {
 
 // MARK: - CustomStringConvertible
 
-extension Subject where Value: CustomStringConvertible {
+prefix operator %
+
+extension Subject: CustomStringConvertible where Value: CustomStringConvertible {
+    
+    public static prefix func % (source: Subject<Value>) -> String {
+        source.replaceToken
+    }
+    
+    public func string() -> Subject<String> {
+        Subject.transform(source: self) { $0.description }
+    }
     
     public var description: String { value.description }
     

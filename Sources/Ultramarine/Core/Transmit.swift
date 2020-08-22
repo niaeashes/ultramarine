@@ -5,7 +5,7 @@
 
 import Foundation
 
-public class Transmit<Value> {
+public class Transmit<Value>: Cancellable {
     
     var sources: Array<Cancellable> = []
     private(set) var upstreams: Array<Weak<Upstream<Value>>> = []
@@ -36,7 +36,7 @@ public class Transmit<Value> {
     }
     
     deinit {
-        upstreams.forEach { $0.obj?.cancel() }
+        releaseAll()
     }
 }
 
@@ -67,7 +67,18 @@ extension Transmit {
     }
 }
 
-// MARK: Modification methods.
+// MARK: - Cancellables
+
+extension Transmit {
+    
+    public func cancel() {
+        releaseAll()
+    }
+    
+    public var isCanceled: Bool { upstreams.allSatisfy { $0.obj?.isCanceled ?? true } }
+}
+
+// MARK: - Modification methods.
 
 extension Transmit {
     
@@ -116,6 +127,36 @@ extension Transmit {
         }
     }
 }
+
+// MARK: - Result
+
+extension Transmit {
+    
+    public func `do`<S, E>(_ completion: @escaping (S) -> Void) -> Transmit<Value> where Value == Result<S, E> {
+        return map {
+            switch $0 {
+            case .success(let value):
+                completion(value)
+            default:
+                break
+            }
+            return $0
+        }
+    }
+    
+    public func `catch`<S, E>(_ completion: @escaping (E) -> Void) -> Transmit<Value> where Value == Result<S, E> {
+        return map {
+            switch $0 {
+            case .failure(let error):
+                completion(error)
+            default:
+                break
+            }
+            return $0
+        }
+    }
+}
+
 
 // MARK: - Cancellable.
 

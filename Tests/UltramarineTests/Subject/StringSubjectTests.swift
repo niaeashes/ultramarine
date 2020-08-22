@@ -51,6 +51,6 @@ class StringSubjectTests: XCTestCase {
     
     func testStringConvertible() {
         let answer = 42.subject()
-        XCTAssertEqual("Answer to ultimate question: \(answer.description)", "Answer to ultimate question: 42")
+        XCTAssertEqual("Answer to ultimate question: \(answer)", "Answer to ultimate question: 42")
     }
 }

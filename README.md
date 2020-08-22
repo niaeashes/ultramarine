@@ -68,7 +68,7 @@ print(counter) // 2
 
 # Usage
 
-## Expressions
+## Standard Operators
 
 ### Arithmetic operators.
 
@@ -126,4 +126,27 @@ If Value is CustomStringconvertible, Subject<Value> has description property.
 ```swift
 let a = 42.subject()
 print("answer to ultimate question: \(a.description)") // print '42'
+```
+
+## Result
+
+Ultramarine supports `Result`.
+
+```swift
+let signal = ResultSignal<Int, Error>()
+let sub = signal
+    .do { print("Answer:", $0) }
+    .catch { _ in print("Caught error") }
+
+signal.fire(value: 42)
+signal.fire(error: TestError())
+
+sub.cancel()
+```
+
+Result:
+
+```
+Answer: 42
+Caught error
 ```
