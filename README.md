@@ -121,11 +121,11 @@ print(r1.value, r2.value, r3.value) // true, true, false
 
 ## CustomStringConvertible
 
-If Value is CustomStringconvertible, Subject<Value> has description property.
+If Value is CustomStringconvertible, Subject<Value> is also CustomStringconvertible.
 
 ```swift
 let a = 42.subject()
-print("answer to ultimate question: \(a.description)") // print '42'
+print("answer to ultimate question: \(a)") // print '42'
 ```
 
 ## Result
