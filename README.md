@@ -135,8 +135,8 @@ Ultramarine supports `Result`.
 ```swift
 let signal = ResultSignal<Int, Error>()
 let sub = signal
-    .do { print("Answer:", $0) }
-    .catch { _ in print("Caught error") }
+    .ifSuccess { print("Answer:", $0) }
+    .ifFailure { _ in print("Caught error") }
 
 signal.fire(value: 42)
 signal.fire(error: TestError())

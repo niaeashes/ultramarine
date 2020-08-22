@@ -128,11 +128,11 @@ extension Transmit {
     }
 }
 
-// MARK: - Result
+// MARK: - Result.
 
 extension Transmit {
     
-    public func `do`<S, E>(_ completion: @escaping (S) -> Void) -> Transmit<Value> where Value == Result<S, E> {
+    public func ifSuccess<S, F>(_ completion: @escaping (S) -> Void) -> Transmit<Value> where Value == Result<S, F> {
         return map {
             switch $0 {
             case .success(let value):
@@ -144,7 +144,7 @@ extension Transmit {
         }
     }
     
-    public func `catch`<S, E>(_ completion: @escaping (E) -> Void) -> Transmit<Value> where Value == Result<S, E> {
+    public func ifFailure<S, F>(_ completion: @escaping (F) -> Void) -> Transmit<Value> where Value == Result<S, F> {
         return map {
             switch $0 {
             case .failure(let error):
@@ -156,7 +156,6 @@ extension Transmit {
         }
     }
 }
-
 
 // MARK: - Cancellable.
 

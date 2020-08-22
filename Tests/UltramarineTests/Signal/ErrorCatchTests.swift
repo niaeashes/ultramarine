@@ -15,8 +15,8 @@ class ErrorCatchTests: XCTestCase {
         var error: Error? = nil
         
         let sub = signal
-            .do { _ in XCTFail() }
-            .catch { error = $0 }
+            .ifSuccess { _ in XCTFail() }
+            .ifFailure { error = $0 }
         
         signal.fire(error: TestError())
         
