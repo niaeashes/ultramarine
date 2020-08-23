@@ -4,5 +4,6 @@
 //
 
 extension Array {
-    public func subject() -> Subject<Self> { Subject<Self>(self) }
+    public func subject() -> Subject { Subject(self) }
+    public typealias Subject = Ultramarine.Subject<Self>
 }

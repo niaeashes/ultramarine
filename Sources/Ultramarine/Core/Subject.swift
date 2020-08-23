@@ -76,3 +76,19 @@ extension Subject {
         subject.value = value
     }
 }
+
+// MARK: - Subjectify: Property Wrapper.
+
+public struct Subjectify<Value> {
+    
+    public init(_ initialValue: Value) {
+        projectedValue = Subject<Value>(initialValue)
+    }
+    
+    public var wrappedValue: Value {
+        get { projectedValue.value }
+        set { projectedValue.value = newValue }
+    }
+    
+    public var projectedValue: Subject<Value>
+}

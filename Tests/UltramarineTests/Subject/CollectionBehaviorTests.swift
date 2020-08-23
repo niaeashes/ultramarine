@@ -34,7 +34,7 @@ class CollectionBehaviorTests: XCTestCase {
         let collection = [Int]().subject()
         var appendedNumber = 0
         
-        collection.appended
+        collection.appendedSignal
             .sink { appendedNumber = $0 }
             .store(to: cancellables)
         
@@ -51,7 +51,7 @@ class CollectionBehaviorTests: XCTestCase {
         let collection = [1, 2, 3].subject()
         var removedNumber = 0
         
-        collection.removed
+        collection.removedSignal
             .sink { removedNumber = $0 }
             .store(to: cancellables)
         
@@ -66,7 +66,7 @@ class CollectionBehaviorTests: XCTestCase {
     
     func testCountSubject() throws {
         let collection = [1, 2, 3].subject()
-        let count = collection.count()
+        let count = collection.count
         
         XCTAssertEqual(count.value, 3)
         
