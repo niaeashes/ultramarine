@@ -52,7 +52,7 @@ class CollectionBehaviorTests: XCTestCase {
         var removedNumber = 0
         
         collection.removedSignal
-            .sink { removedNumber = $0 }
+            .sink { removedNumber = $0.1 }
             .store(to: cancellables)
         
         collection.remove(at: 0)

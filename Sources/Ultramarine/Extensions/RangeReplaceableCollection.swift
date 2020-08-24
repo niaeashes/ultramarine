@@ -9,7 +9,7 @@ private let REMOVED_SIGNAL_KEY = "removed"
 extension Subject where Value: RangeReplaceableCollection {
     
     public var appendedSignal: Signal<Value.Element>! { signal.get(name: APPENDED_SIGNAL_KEY) }
-    public var removedSignal: Signal<Value.Element>! { signal.get(name: REMOVED_SIGNAL_KEY) }
+    public var removedSignal: Signal<(Value.Index, Value.Element)>! { signal.get(name: REMOVED_SIGNAL_KEY) }
     
     public func append(_ newElement: Value.Element) {
         value.append(newElement)
@@ -25,7 +25,7 @@ extension Subject where Value: RangeReplaceableCollection {
         let element = value.remove(at: i)
         
         if signal.has(name: REMOVED_SIGNAL_KEY) {
-            removedSignal?.fire(element)
+            removedSignal?.fire((i, element))
         }
         relay(value)
         
