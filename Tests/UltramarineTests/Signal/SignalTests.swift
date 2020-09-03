@@ -70,6 +70,26 @@ class SignalTests: XCTestCase {
         XCTAssertEqual(counter, "123")
     }
     
+    func testFuture() throws {
+        
+        let signal = Int.signal()
+        var result = 0
+        
+        let sub = signal
+            .future { value, done in
+                done(value * 2)
+            }
+            .sink { result = $0 }
+        
+        signal.fire(10)
+        XCTAssertEqual(result, 20)
+        
+        sub.cancel()
+        
+        signal.fire(12)
+        XCTAssertEqual(result, 20)
+    }
+    
     func testActionRedister() {
         
         class Receiver {

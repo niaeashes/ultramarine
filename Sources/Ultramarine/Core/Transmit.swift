@@ -104,6 +104,17 @@ extension Transmit {
         return publisher
     }
     
+    public func future<Output>(_ future: @escaping (Value, (Output) -> Void) -> Void) -> Transmit<Output> {
+        let publisher = Transmit<Output>()
+        let sub = sign { [weak publisher] in
+            guard let publisher = publisher else { return $1.cancel() }
+            future($0) { output in publisher.relay(output) }
+        }
+        publisher.bind(source: sub)
+        sub.debugObject = publisher
+        return publisher
+    }
+    
     @discardableResult
     public func sink(_ completion: @escaping (Value) -> Void) -> Cancellable {
         return sign { value, _ in completion(value) }
